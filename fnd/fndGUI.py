@@ -29,26 +29,34 @@ class FakeDetector:
             label='About',
             command=lambda: self.showAbout(root))
 
-        menu_pref.add_checkbutton(label='Activate advanced mode', command=self.analyse)
+        menu_pref.add_checkbutton(
+            label='Activate advanced mode',
+            command=self.analyse)
 
+        # Main frame
         mainframe = ttk.Frame(root, padding='3 3 12 12')
         mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
         root.columnconfigure(0, weight=1)
         root.rowconfigure(0, weight=1)
 
-        self.input_text = StringVar()
-        input_text_entry = ttk.Entry(
-            mainframe, textvariable=self.input_text)  # width=7
-        input_text_entry.grid(column=1, row=2, rowspan=2, sticky=(N, W, E, S))
+        # TODO: CHECK IT'S NOT TOO BIG
+        self.input_text = Text(mainframe, width=40, height=10)
+        self.input_text.grid(column=1, row=2, rowspan=2, sticky=(N, W, E, S))
+        self.scroll_text = ttk.Scrollbar(
+            mainframe, orient=VERTICAL, command=self.input_text.yview)
+        self.scroll_text.grid(
+            column=2, row=2, rowspan=2, sticky=(
+                N, S, W))  # sticky=(N,S)
+        self.input_text.configure(yscrollcommand=self.scroll_text.set)
 
         self.analysis_result = StringVar()
         ttk.Label(mainframe, textvariable=self.analysis_result).grid(
-            column=2, row=3, sticky=(N, W, S, E))
+            column=3, row=3, sticky=(N, W, S, E))
 
         ttk.Button(mainframe, text='Analyse', command=self.analyse).grid(
-            column=2, row=2)  # sticky=W
+            column=3, row=2)  # sticky=W
         ttk.Button(mainframe, text='Advanced', command=self.analyse).grid(
-            column=3, row=2, sticky=W)
+            column=4, row=2, sticky=W)
 
         ttk.Label(mainframe, text='Put the text to analyze below \u2193').grid(
             column=1, row=1, sticky=S)
@@ -58,11 +66,13 @@ class FakeDetector:
         for child in mainframe.winfo_children():
             child.grid_configure(padx=5, pady=5)
 
-        input_text_entry.focus()
+        self.input_text.focus_set()
         root.bind('<Return>', self.analyse)
 
     def analyse(self, *args):
-        messagebox.showinfo(self.input_text.get())
+        messagebox.showinfo(
+            self.input_text.get(
+                '1.0', 'end-1c'))  # end-1c trim newline
         self.analysis_result.set('95% True')
 
     def showAbout(self, root):
@@ -108,5 +118,6 @@ if __name__ == '__main__':
     root.mainloop()
 
 # TODO: make the arrows point exactly at the respective buttons; 95% True
-# appears not directly under the button 'Analyse'. Replce entry with
-# text area. add resizing support for the main window. Check macos support
+# appears not directly under the button 'Analyse'. add resizing support
+# for the main window. Check macos support. Pack separately? Scrollbar is
+# too far rom the textbox
