@@ -29,6 +29,8 @@ class FakeDetector:
             label='About',
             command=lambda: self.showAbout(root))
 
+        menu_pref.add_checkbutton(label='Activate advanced mode', command=self.analyse)
+
         mainframe = ttk.Frame(root, padding='3 3 12 12')
         mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
         root.columnconfigure(0, weight=1)
