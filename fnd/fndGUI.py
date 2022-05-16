@@ -91,6 +91,10 @@ class FakeDetector:
 
         #self.update_padding(self.mainframe)
 
+        # Temporarily
+        self.mainframe.columnconfigure(tuple(range(10)), weight=1)
+        self.mainframe.rowconfigure(tuple(range(10)), weight=1)
+
         ## This code is bad: refactor it somehow
         #for child in self.mainframe.winfo_children():
         #    name = str(child)
