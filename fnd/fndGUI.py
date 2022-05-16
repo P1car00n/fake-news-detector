@@ -41,30 +41,33 @@ class FakeDetector:
 
         # TODO: CHECK IT'S NOT TOO BIG
         self.input_text = Text(mainframe, width=40, height=10)
-        self.input_text.grid(column=1, row=2, rowspan=2, sticky=(N, W, E, S))
+        self.input_text.grid(column=0, row=2, rowspan=2, sticky=(N, W, E, S))
         self.scroll_text = ttk.Scrollbar(
             mainframe, orient=VERTICAL, command=self.input_text.yview)
         self.scroll_text.grid(
-            column=2, row=2, rowspan=2, sticky=(
+            column=1, row=2, rowspan=2, sticky=(
                 N, S, W))  # sticky=(N,S)
         self.input_text.configure(yscrollcommand=self.scroll_text.set)
 
         self.analysis_result = StringVar()
         ttk.Label(mainframe, textvariable=self.analysis_result).grid(
-            column=3, row=3, sticky=(N, W, S, E))
+            column=2, row=3, sticky=(N, W, S, E))
 
         ttk.Button(mainframe, text='Analyse', command=self.analyse).grid(
-            column=3, row=2)  # sticky=W
-        ttk.Button(mainframe, text='Advanced', command=self.analyse).grid(
-            column=4, row=2, sticky=W)
+            column=2, row=2)  # sticky=W
+        ttk.Button(mainframe, text='Close', command=self.analyse).grid(
+            column=2, row=4)
 
         ttk.Label(mainframe, text='Put the text to analyze below \u2193').grid(
-            column=1, row=1, sticky=S)
+            column=0, row=0, sticky=S)
         ttk.Label(mainframe, text='Click to start analysation \u2193').grid(
-            column=2, row=1, sticky=S)
+            column=2, row=0, sticky=S)
 
-        for child in mainframe.winfo_children():
-            child.grid_configure(padx=5, pady=5)
+        #for child in mainframe.winfo_children():
+        #    if str(child) == '.!frame.!scrollbar':
+        #        print('found')
+        #        continue
+        #    child.grid_configure(padx=5, pady=5)
 
         self.input_text.focus_set()
         root.bind('<Return>', self.analyse)
@@ -120,4 +123,4 @@ if __name__ == '__main__':
 # TODO: make the arrows point exactly at the respective buttons; 95% True
 # appears not directly under the button 'Analyse'. add resizing support
 # for the main window. Check macos support. Pack separately? Scrollbar is
-# too far rom the textbox
+# too far rom the textbox. Add paste to the textbox?
