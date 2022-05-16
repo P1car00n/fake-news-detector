@@ -22,12 +22,12 @@ class FakeDetector:
         menu_pref = Menu(menubar)
         menu_help = Menu(menubar)
 
-        menubar.add_cascade(menu=menu_pref, label='Preferences')
-        menubar.add_cascade(menu=menu_help, label='Help')
+        menubar.add_cascade(menu=menu_pref, label='Preferences', underline=0)
+        menubar.add_cascade(menu=menu_help, label='Help', underline=0)
 
         menu_help.add_command(
             label='About',
-            command=lambda: self.showAbout(root))
+            command=lambda: self.showAbout(root), underline=0)
 
         self.interface_mode = StringVar()
         menu_pref.add_checkbutton(
@@ -37,7 +37,8 @@ class FakeDetector:
                 self.mainframe),
             variable=self.interface_mode,
             onvalue='advanced',
-            offvalue='simple')
+            offvalue='simple',
+            underline=0)
 
         # Main frame
         self.mainframe = ttk.Frame(root, padding='3 3 12 12')
@@ -163,4 +164,4 @@ if __name__ == '__main__':
 # TODO: make the arrows point exactly at the respective buttons; 95% True
 # appears not directly under the button 'Analyse'. add resizing support
 # for the main window. Check macos support. Put grid statements separately?
-# Add paste to the textbox?
+# Add paste to the textbox? Theming support? Show about broke -_-
