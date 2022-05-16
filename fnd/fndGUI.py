@@ -29,42 +29,60 @@ class FakeDetector:
             label='About',
             command=lambda: self.showAbout(root))
 
+        self.interface_mode = StringVar()
         menu_pref.add_checkbutton(
             label='Activate advanced mode',
-            command=self.analyse)
+            command=lambda: self.set_interface(
+                self.interface_mode.get(),
+                self.mainframe),
+            variable=self.interface_mode,
+            onvalue='advanced',
+            offvalue='simple')
 
         # Main frame
-        mainframe = ttk.Frame(root, padding='3 3 12 12')
-        mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
+        self.mainframe = ttk.Frame(root, padding='3 3 12 12')
+        self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
         root.columnconfigure(0, weight=1)
         root.rowconfigure(0, weight=1)
 
         # TODO: CHECK IT'S NOT TOO BIG
-        self.input_text = Text(mainframe, width=40, height=10)
+        self.input_text = Text(self.mainframe, width=40, height=10)
         self.input_text.grid(column=0, row=2, rowspan=2, sticky=(N, W, E, S))
         self.scroll_text = ttk.Scrollbar(
-            mainframe, orient=VERTICAL, command=self.input_text.yview)
+            self.mainframe, orient=VERTICAL, command=self.input_text.yview)
         self.scroll_text.grid(
             column=1, row=2, rowspan=2, sticky=(
                 N, S, W))  # sticky=(N,S)
         self.input_text.configure(yscrollcommand=self.scroll_text.set)
 
-        label_result = ttk.Labelframe(mainframe, text='Result')
-        label_result.grid(column=2, row=3, sticky=(N, W, S, E))
+        labelfr_result = ttk.Labelframe(self.mainframe, text='Result')
+        labelfr_result.grid(column=2, row=3, sticky=(N, W, S, E))
         self.analysis_result = StringVar()
-        ttk.Label(label_result, textvariable=self.analysis_result).grid(column=0, row=0)
+        ttk.Label(
+            labelfr_result,
+            textvariable=self.analysis_result).grid(
+            column=0,
+            row=0)
 
-        ttk.Button(mainframe, text='Analyse', command=self.analyse).grid(
+        ttk.Button(self.mainframe, text='Analyse', command=self.analyse).grid(
             column=2, row=2)  # sticky=W
-        ttk.Button(mainframe, text='Close', command=self.analyse).grid(
+        ttk.Button(self.mainframe, text='Close', command=self.analyse).grid(
             column=2, row=4)
 
-        ttk.Label(mainframe, text='Put the text to analyze below \u2193').grid(
-            column=0, row=0, sticky=S)
-        ttk.Label(mainframe, text='Click to start analysation \u2193').grid(
-            column=2, row=0, sticky=S)
+        ttk.Label(
+            self.mainframe,
+            text='Put the text to analyze below \u2193').grid(
+            column=0,
+            row=0,
+            sticky=S)
+        ttk.Label(
+            self.mainframe,
+            text='Click to start analysation \u2193').grid(
+            column=2,
+            row=0,
+            sticky=S)
 
-        #for child in mainframe.winfo_children():
+        # for child in self.mainframe.winfo_children():
         #    if str(child) == '.!frame.!scrollbar':
         #        print('found')
         #        continue
@@ -79,7 +97,23 @@ class FakeDetector:
                 '1.0', 'end-1c'))  # end-1c trim newline
         self.analysis_result.set('95% True')
 
-    def showAbout(self, root):
+    def set_interface(self, mode, mainframe):
+        # Not very OOP; maybe rework
+        if mode == 'advanced':
+            self.labelfr_advanced = ttk.Labelframe(
+                mainframe, text='Advanced Interface')
+            self.labelfr_advanced.grid(
+                column=3, row=0, rowspan=4, sticky=(
+                    N, W, S, E))
+            ttk.Label(
+                self.labelfr_advanced,
+                text='Placeholder').grid(
+                column=0,
+                row=0)
+        elif mode == 'simple':
+            self.labelfr_advanced.destroy()
+
+    def show_about(self, root):
         # Potentially replace with OOP
         win_about = Toplevel(root)
         win_about.title('About Fake News Detector')
@@ -123,5 +157,5 @@ if __name__ == '__main__':
 
 # TODO: make the arrows point exactly at the respective buttons; 95% True
 # appears not directly under the button 'Analyse'. add resizing support
-# for the main window. Check macos support. Pack separately? Scrollbar is
-# too far rom the textbox. Add paste to the textbox?
+# for the main window. Check macos support. Put grid statements separately?
+# Add paste to the textbox?
