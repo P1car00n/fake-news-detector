@@ -49,11 +49,10 @@ class FakeDetector:
                 N, S, W))  # sticky=(N,S)
         self.input_text.configure(yscrollcommand=self.scroll_text.set)
 
-        label_result = ttk.Labelframe(mainframe, text='Label').grid(
-            column=2, row=3, sticky=(N, W, S, E))
+        label_result = ttk.Labelframe(mainframe, text='Result')
+        label_result.grid(column=2, row=3, sticky=(N, W, S, E))
         self.analysis_result = StringVar()
-        ttk.Label(label_result, textvariable=self.analysis_result).grid(
-            column=0, row=0, sticky=(N, W, S, E))
+        ttk.Label(label_result, textvariable=self.analysis_result).grid(column=0, row=0)
 
         ttk.Button(mainframe, text='Analyse', command=self.analyse).grid(
             column=2, row=2)  # sticky=W
