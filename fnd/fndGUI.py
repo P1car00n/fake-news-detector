@@ -27,7 +27,7 @@ class FakeDetector:
 
         menu_help.add_command(
             label='About',
-            command=lambda: self.showAbout(root), underline=0)
+            command=lambda: self.show_about(root), underline=0)
 
         self.interface_mode = StringVar()
         menu_pref.add_checkbutton(
@@ -41,6 +41,7 @@ class FakeDetector:
             underline=0)
 
         # Main frame
+        # Why did i make it self?
         self.mainframe = ttk.Frame(root, padding='3 3 12 12')
         self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
         root.columnconfigure(0, weight=1)
@@ -48,16 +49,16 @@ class FakeDetector:
 
         # TODO: CHECK IT'S NOT TOO BIG
         self.input_text = Text(self.mainframe, width=40, height=10)
-        self.input_text.grid(column=0, row=2, rowspan=2, sticky=(N, W, E, S))
+        self.input_text.grid(column=0, row=2, rowspan=2, sticky=(N, W, E, S), padx=(10,0))
         self.scroll_text = ttk.Scrollbar(
             self.mainframe, orient=VERTICAL, command=self.input_text.yview)
         self.scroll_text.grid(
             column=1, row=2, rowspan=2, sticky=(
-                N, S, W))  # sticky=(N,S)
+                N, S, W), padx=(0,10))  # sticky=(N,S)
         self.input_text.configure(yscrollcommand=self.scroll_text.set)
 
         labelfr_result = ttk.Labelframe(self.mainframe, text='Result')
-        labelfr_result.grid(column=2, row=3, sticky=(N, W, S, E))
+        labelfr_result.grid(column=2, row=3, sticky=(N, W, S, E), pady=(10, 0), padx=10)
         self.analysis_result = StringVar()
         ttk.Label(
             labelfr_result,
@@ -73,7 +74,7 @@ class FakeDetector:
             column=2,
             row=2)  # sticky=W
         ttk.Button(self.mainframe, text='Close', command=root.destroy).grid(
-            column=2, row=4)
+            column=2, row=4, pady = (10,0))
 
         ttk.Label(
             self.mainframe,
@@ -88,14 +89,28 @@ class FakeDetector:
             row=0,
             sticky=S)
 
-        # for child in self.mainframe.winfo_children():
-        #    if str(child) == '.!frame.!scrollbar':
-        #        print('found')
+        #self.update_padding(self.mainframe)
+
+        ## This code is bad: refactor it somehow
+        #for child in self.mainframe.winfo_children():
+        #    name = str(child)
+        #    if name == '.!frame.!scrollbar':
+        #        child.grid_configure(padx=(0, 5), pady=5)
+        #        continue
+        #    elif name == '.!frame.!text':
+        #        child.grid_configure(padx=(5, 0), pady=5)
+        #        continue
+        #    elif name == '.!frame.!button2':
         #        continue
         #    child.grid_configure(padx=5, pady=5)
 
         self.input_text.focus_set()
         root.bind('<Return>', self.analyse)
+
+    #def update_padding(self, frame):
+    #    columns, rows = frame.grid_size()
+    #    frame.rowconfigure(rows, pad=5)
+    #    frame.columnconfigure(columns, pad=5)
 
     def analyse(self, *args):
         messagebox.showinfo(
@@ -110,7 +125,7 @@ class FakeDetector:
                 mainframe, text='Advanced Interface')
             self.labelfr_advanced.grid(
                 column=3, row=0, rowspan=4, sticky=(
-                    N, W, S, E))
+                    N, W, S, E), pady=(10, 0), padx=10)
             ttk.Label(
                 self.labelfr_advanced,
                 text='Placeholder').grid(
@@ -164,4 +179,4 @@ if __name__ == '__main__':
 # TODO: make the arrows point exactly at the respective buttons; 95% True
 # appears not directly under the button 'Analyse'. add resizing support
 # for the main window. Check macos support. Put grid statements separately?
-# Add paste to the textbox? Theming support? Show about broke -_-
+# Add paste to the textbox? Theming support? Contextual menu?
