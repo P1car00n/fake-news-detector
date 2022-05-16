@@ -64,9 +64,14 @@ class FakeDetector:
             column=0,
             row=0)
 
-        ttk.Button(self.mainframe, text='Analyse', command=self.analyse).grid(
-            column=2, row=2)  # sticky=W
-        ttk.Button(self.mainframe, text='Close', command=self.analyse).grid(
+        ttk.Button(
+            self.mainframe,
+            text='Analyse',
+            state='active',
+            command=self.analyse).grid(
+            column=2,
+            row=2)  # sticky=W
+        ttk.Button(self.mainframe, text='Close', command=root.destroy).grid(
             column=2, row=4)
 
         ttk.Label(
