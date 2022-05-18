@@ -3,6 +3,8 @@
 This module contains all the logic needed to build the program's GUI.
 """
 
+import fnd
+
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -49,16 +51,22 @@ class FakeDetector:
 
         # TODO: CHECK IT'S NOT TOO BIG
         self.input_text = Text(self.mainframe, width=40, height=10)
-        self.input_text.grid(column=0, row=2, rowspan=2, sticky=(N, W, E, S), padx=(10,0))
+        self.input_text.grid(
+            column=0, row=2, rowspan=2, sticky=(
+                N, W, E, S), padx=(
+                10, 0))
         self.scroll_text = ttk.Scrollbar(
             self.mainframe, orient=VERTICAL, command=self.input_text.yview)
         self.scroll_text.grid(
             column=1, row=2, rowspan=2, sticky=(
-                N, S, W), padx=(0,10))  # sticky=(N,S)
+                N, S, W), padx=(0, 10))  # sticky=(N,S)
         self.input_text.configure(yscrollcommand=self.scroll_text.set)
 
         labelfr_result = ttk.Labelframe(self.mainframe, text='Result')
-        labelfr_result.grid(column=2, row=3, sticky=(N, W, S, E), pady=(10, 0), padx=10)
+        labelfr_result.grid(
+            column=2, row=3, sticky=(
+                N, W, S, E), pady=(
+                10, 0), padx=10)
         self.analysis_result = StringVar()
         ttk.Label(
             labelfr_result,
@@ -74,7 +82,7 @@ class FakeDetector:
             column=2,
             row=2)  # sticky=W
         ttk.Button(self.mainframe, text='Close', command=root.destroy).grid(
-            column=2, row=4, pady = (10,0))
+            column=2, row=4, pady=(10, 0))
 
         ttk.Label(
             self.mainframe,
@@ -89,14 +97,14 @@ class FakeDetector:
             row=0,
             sticky=S)
 
-        #self.update_padding(self.mainframe)
+        # self.update_padding(self.mainframe)
 
         # Temporarily
         self.mainframe.columnconfigure(tuple(range(10)), weight=1)
         self.mainframe.rowconfigure(tuple(range(10)), weight=1)
 
-        ## This code is bad: refactor it somehow
-        #for child in self.mainframe.winfo_children():
+        # This code is bad: refactor it somehow
+        # for child in self.mainframe.winfo_children():
         #    name = str(child)
         #    if name == '.!frame.!scrollbar':
         #        child.grid_configure(padx=(0, 5), pady=5)
@@ -111,16 +119,18 @@ class FakeDetector:
         self.input_text.focus_set()
         root.bind('<Return>', self.analyse)
 
-    #def update_padding(self, frame):
+    # def update_padding(self, frame):
     #    columns, rows = frame.grid_size()
     #    frame.rowconfigure(rows, pad=5)
     #    frame.columnconfigure(columns, pad=5)
 
     def analyse(self, *args):
-        messagebox.showinfo(
-            self.input_text.get(
-                '1.0', 'end-1c'))  # end-1c trim newline
-        self.analysis_result.set('95% True')
+        # end-1c trim newline # there still is a newline \n
+        result = fnd.testModel(self.input_text.get('1.0', 'end-1c'))
+        # messagebox.showinfo(
+        #    self.input_text.get(
+        #        '1.0', 'end-1c'))  # end-1c trim newline
+        self.analysis_result.set(result)
 
     def set_interface(self, mode, mainframe):
         # Not very OOP; maybe rework
@@ -181,6 +191,7 @@ if __name__ == '__main__':
     root.mainloop()
 
 # TODO: make the arrows point exactly at the respective buttons; 95% True
-# appears not directly under the button 'Analyse'. add resizing support
+# appears not directly under the button 'Analyse'. add (decent) resizing support
 # for the main window. Check macos support. Put grid statements separately?
-# Add paste to the textbox? Theming support? Contextual menu?
+# Add paste to the textbox? Theming support? Contextual menu? Add better
+# docstrings?
