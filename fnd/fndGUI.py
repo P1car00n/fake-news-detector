@@ -142,9 +142,60 @@ class FakeDetector:
                     N, W, S, E), pady=(10, 0), padx=10)
             ttk.Label(
                 self.labelfr_advanced,
-                text='Placeholder').grid(
+                text='Current model:').grid(
                 column=0,
                 row=0)
+            ttk.Label(
+                self.labelfr_advanced,
+                text='<Current model> placeholder:').grid(
+                column=0,
+                row=1)
+            ttk.Label(
+                self.labelfr_advanced,
+                text='Choose a model:').grid(
+                column=0,
+                row=2)
+            ttk.Combobox(
+                self.labelfr_advanced, values=('Placeholder 1', 'Placeholder 2'), state='readonly'
+                ).grid(
+                column=0,
+                row=3)
+            ttk.Label(
+                self.labelfr_advanced,
+                text='Efficiency:').grid(
+                column=1,
+                row=0)
+            ttk.Label(
+                self.labelfr_advanced,
+                text='<Efficiency> placeholder').grid(
+                column=1,
+                row=1)
+            ttk.Label(
+                self.labelfr_advanced,
+                text='Confusion matrix:').grid(
+                column=1,
+                row=2)
+            ttk.Label(
+                self.labelfr_advanced,
+                text='<Confusion matrix> placeholder').grid(
+                column=1,
+                row=3)
+            self.labelfr_options = ttk.Labelframe(
+                self.labelfr_advanced, text=r'Options\tweaks')
+            self.labelfr_options.grid(
+                column=2, row=0, columnspan=3, rowspan=4, sticky=(
+                    N, W, S, E), pady=(10, 0), padx=10)
+            ttk.Label(
+                self.labelfr_options,
+                text='placeholder').grid(
+                column=0,
+                row=0)
+            ttk.Button(self.labelfr_advanced, text='Create new...', command=lambda: print('i work')).grid(
+            column=2, row=4, pady=(10, 0))
+            ttk.Button(self.labelfr_advanced, text='Export as...', command=lambda: print('i work')).grid(
+            column=3, row=4, pady=(10, 0))
+            ttk.Button(self.labelfr_advanced, text='Update\save', command=messagebox.showinfo).grid(
+            column=4, row=4, pady=(10, 0))
         elif mode == 'simple':
             self.labelfr_advanced.destroy()
 
