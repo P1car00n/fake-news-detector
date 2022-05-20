@@ -3,6 +3,7 @@
 This module contains all the logic needed to build the program's GUI.
 """
 
+from tkinter import filedialog
 import fnd
 
 from tkinter import *
@@ -145,9 +146,10 @@ class FakeDetector:
                 text='Current model:').grid(
                 column=0,
                 row=0)
+            self.current_model = StringVar()
             ttk.Label(
                 self.labelfr_advanced,
-                text='<Current model> placeholder:').grid(
+                textvariable=self.current_model).grid(
                 column=0,
                 row=1)
             ttk.Label(
@@ -155,9 +157,13 @@ class FakeDetector:
                 text='Choose a model:').grid(
                 column=0,
                 row=2)
-            ttk.Combobox(
-                self.labelfr_advanced, values=('Placeholder 1', 'Placeholder 2'), state='readonly'
-                ).grid(
+            self.cb_models = ttk.Combobox(
+                self.labelfr_advanced,
+                values=(
+                    'Placeholder 1',
+                    'Placeholder 2'),
+                state='readonly')
+            self.cb_models.grid(
                 column=0,
                 row=3)
             ttk.Label(
@@ -190,14 +196,47 @@ class FakeDetector:
                 text='placeholder').grid(
                 column=0,
                 row=0)
-            ttk.Button(self.labelfr_advanced, text='Create new...', command=lambda: print('i work')).grid(
-            column=2, row=4, pady=(10, 0))
-            ttk.Button(self.labelfr_advanced, text='Export as...', command=lambda: print('i work')).grid(
-            column=3, row=4, pady=(10, 0))
-            ttk.Button(self.labelfr_advanced, text='Update\save', command=messagebox.showinfo).grid(
-            column=4, row=4, pady=(10, 0))
+            ttk.Button(
+                self.labelfr_advanced,
+                text='Create new...',
+                command=self.get_filename).grid(
+                column=2,
+                row=4,
+                pady=(
+                    10,
+                    0))
+            ttk.Button(
+                self.labelfr_advanced,
+                text='Export as...',
+                command=lambda: print('i work')).grid(
+                column=3,
+                row=4,
+                pady=(
+                    10,
+                    0))
+            ttk.Button(
+                self.labelfr_advanced,
+                text='Update\\save',
+                command=messagebox.showinfo).grid(
+                column=4,
+                row=4,
+                pady=(
+                    10,
+                    0))
         elif mode == 'simple':
             self.labelfr_advanced.destroy()
+
+    def get_filename(self):
+        file = filedialog.askopenfile(
+            filetypes=[("CSV files", ".csv"), ("all files", "*.*")])
+        # use regex to propose a default file name
+        self.current_model.set(file.name + ' <Unsaved>')  # make red
+        self.cb_models.set('')
+        file.close()
+
+    def create_model(self):
+        # think how to make use of picling\unpickling
+        pass
 
     def show_about(self, root):
         # Potentially replace with OOP

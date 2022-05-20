@@ -9,8 +9,8 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 
 class Detector:
 
-    def __init__(self, data_path, column_title='text') -> None:
-        self.data_frame = pd.read_csv(data_path)
+    def __init__(self, data, column_title='text') -> None:
+        self.data_frame = pd.read_csv(data)
         self.labels = self.data_frame.label
         x_train, x_test, self.y_train, self.y_test = train_test_split(
             self.data_frame[column_title], self.labels)
