@@ -39,6 +39,9 @@ class PAClassifier(Detector):
         self.score = accuracy_score(self.y_test, self.y_pred)
         # print(f'Accuracy: {round(score*100,2)}%')
         # print(confusion_matrix(y_test, y_pred, labels=['FAKE', 'REAL']))
+        self.matrix = confusion_matrix(
+            self.y_test, self.y_pred, labels=[
+                'FAKE', 'REAL'])  # Make more user friendly?
 
     def predict(self, text):
         return Detector.predict(self, self.pac, self.tfidf_vectorizer, text)

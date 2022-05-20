@@ -181,9 +181,10 @@ class FakeDetector:
                 text='Confusion matrix:').grid(
                 column=1,
                 row=2)
+            self.stats = StringVar()
             ttk.Label(
                 self.labelfr_advanced,
-                text='<Confusion matrix> placeholder').grid(
+                textvariable=self.stats).grid(
                 column=1,
                 row=3)
             self.labelfr_options = ttk.Labelframe(
@@ -198,7 +199,7 @@ class FakeDetector:
                 row=0)
             ttk.Button(
                 self.labelfr_advanced,
-                text='Create new...',
+                text='Create new...',  # maybe just Create new model?
                 command=self.get_filename).grid(
                 column=2,
                 row=4,
@@ -207,7 +208,7 @@ class FakeDetector:
                     0))
             ttk.Button(
                 self.labelfr_advanced,
-                text='Export as...',
+                text='Export as...',  # probably better just export
                 command=lambda: print('i work')).grid(
                 column=3,
                 row=4,
@@ -235,12 +236,15 @@ class FakeDetector:
 
     def create_model(self):
         # think how to make use of picling\unpickling
+        # if click update again -- error IO on closed file -- 
+        # should just create models from pickle
         self.model = fnd.PAClassifier(self.file)
         self.file.close()  # check if closed -- maybe no need to close
         # should do it with combobox
         # make score into a property? # print(f'Accuracy:
         # {round(score*100,2)}%') user friendliness
         self.accuracy.set(self.model.score)
+        self.stats.set(self.model.matrix)
 
     def show_about(self, root):
         # Potentially replace with OOP
