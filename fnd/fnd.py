@@ -32,8 +32,11 @@ class PAClassifier(Detector):
         Detector.__init__(self, data, column_title)
         self.pac = PassiveAggressiveClassifier()  # add max iter at a later point
         self.pac.fit(self.tfidf_train, self.y_train)
-        y_pred = self.pac.predict(self.tfidf_test)
-        score = accuracy_score(self.y_test, y_pred)
+        self.y_pred = self.pac.predict(self.tfidf_test)
+        # self.score wasn't visible until i added self tp y_pred, probably
+        # bacause instances don't have access to variables created inside
+        # functions
+        self.score = accuracy_score(self.y_test, self.y_pred)
         # print(f'Accuracy: {round(score*100,2)}%')
         # print(confusion_matrix(y_test, y_pred, labels=['FAKE', 'REAL']))
 

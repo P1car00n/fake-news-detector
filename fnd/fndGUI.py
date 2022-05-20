@@ -167,12 +167,13 @@ class FakeDetector:
                 row=3)
             ttk.Label(
                 self.labelfr_advanced,
-                text='Efficiency:').grid(
+                text='Accuracy:').grid(
                 column=1,
                 row=0)
+            self.accuracy = StringVar()
             ttk.Label(
                 self.labelfr_advanced,
-                text='<Efficiency> placeholder').grid(
+                textvariable=self.accuracy).grid(
                 column=1,
                 row=1)
             ttk.Label(
@@ -236,6 +237,10 @@ class FakeDetector:
         # think how to make use of picling\unpickling
         self.model = fnd.PAClassifier(self.file)
         self.file.close()  # check if closed -- maybe no need to close
+        # should do it with combobox
+        # make score into a property? # print(f'Accuracy:
+        # {round(score*100,2)}%') user friendliness
+        self.accuracy.set(self.model.score)
 
     def show_about(self, root):
         # Potentially replace with OOP
