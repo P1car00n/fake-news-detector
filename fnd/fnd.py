@@ -14,27 +14,31 @@ class Detector:
         self.labels = self.data_frame.label
         x_train, x_test, self.y_train, self.y_test = train_test_split(
             self.data_frame[column_title], self.labels)
-        tfidf_vectorizer = TfidfVectorizer(stop_words='english')
-        self.tfidf_train = tfidf_vectorizer.fit_transform(x_train)
-        self.tfidf_test = tfidf_vectorizer.transform(x_test)
+        self.tfidf_vectorizer = TfidfVectorizer(stop_words='english')
+        self.tfidf_train = self.tfidf_vectorizer.fit_transform(x_train)
+        self.tfidf_test = self.tfidf_vectorizer.transform(x_test)
 
     def predict(self, classifier, vectoriser, text):
         # using the same vectoriser?
-        vec_newtest = vectoriser.transform(list(text))
+        # list() divides sentences into letters, interesting
+        vec_newtest = vectoriser.transform([text])
         t_pred = classifier.predict(vec_newtest)
         return t_pred
 
 
 class PAClassifier(Detector):
 
-    def __init__(self, data_path, column_title='text') -> None:
-        Detector.__init__(data_path, column_title)
-        pac = PassiveAggressiveClassifier()  # add max iter a a later point
-        pac.fit(self.tfidf_train, self.y_train)
-        y_pred = pac.predict(self.tfidf_test)
+    def __init__(self, data, column_title='text') -> None:
+        Detector.__init__(self, data, column_title)
+        self.pac = PassiveAggressiveClassifier()  # add max iter at a later point
+        self.pac.fit(self.tfidf_train, self.y_train)
+        y_pred = self.pac.predict(self.tfidf_test)
         score = accuracy_score(self.y_test, y_pred)
         # print(f'Accuracy: {round(score*100,2)}%')
         # print(confusion_matrix(y_test, y_pred, labels=['FAKE', 'REAL']))
+
+    def predict(self, text):
+        return Detector.predict(self, self.pac, self.tfidf_vectorizer, text)
 
 
 # Donald Trump says UFO is real

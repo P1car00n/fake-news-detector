@@ -2,13 +2,12 @@
 
 This module contains all the logic needed to build the program's GUI.
 """
-
-from tkinter import filedialog
 import fnd
 
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+from tkinter import filedialog
 
 
 class FakeDetector:
@@ -127,7 +126,7 @@ class FakeDetector:
 
     def analyse(self, *args):
         # end-1c trim newline # there still is a newline \n
-        result = fnd.testModel(self.input_text.get('1.0', 'end-1c'))
+        result = self.model.predict(self.input_text.get('1.0', 'end-1c'))
         # messagebox.showinfo(
         #    self.input_text.get(
         #        '1.0', 'end-1c'))  # end-1c trim newline
@@ -217,7 +216,7 @@ class FakeDetector:
             ttk.Button(
                 self.labelfr_advanced,
                 text='Update\\save',
-                command=messagebox.showinfo).grid(
+                command=self.create_model).grid(
                 column=4,
                 row=4,
                 pady=(
@@ -227,16 +226,16 @@ class FakeDetector:
             self.labelfr_advanced.destroy()
 
     def get_filename(self):
-        file = filedialog.askopenfile(
+        self.file = filedialog.askopenfile(
             filetypes=[("CSV files", ".csv"), ("all files", "*.*")])
         # use regex to propose a default file name
-        self.current_model.set(file.name + ' <Unsaved>')  # make red
+        self.current_model.set(self.file.name + ' <Unsaved>')  # make red
         self.cb_models.set('')
-        file.close()
 
     def create_model(self):
         # think how to make use of picling\unpickling
-        pass
+        self.model = fnd.PAClassifier(self.file)
+        self.file.close()  # check if closed -- maybe no need to close
 
     def show_about(self, root):
         # Potentially replace with OOP
