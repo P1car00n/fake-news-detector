@@ -3,11 +3,13 @@
 This module contains all the logic needed to build the program's GUI.
 """
 import fnd
+#import os.path
 
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from tkinter import filedialog
+from pathlib import Path
 
 
 class FakeDetector:
@@ -194,9 +196,11 @@ class FakeDetector:
                     N, W, S, E), pady=(10, 0), padx=10)
             ttk.Label(
                 self.labelfr_options,
-                text='placeholder').grid(
+                text='Name of the model:').grid(
                 column=0,
                 row=0)
+            self.model_name = StringVar()
+            ttk.Entry(self.labelfr_options, textvariable=self.model_name).grid(column=0, row=1)
             ttk.Button(
                 self.labelfr_advanced,
                 text='Create new...',  # maybe just Create new model?
@@ -233,6 +237,8 @@ class FakeDetector:
         # use regex to propose a default file name
         self.current_model.set(self.file.name + ' <Unsaved>')  # make red
         self.cb_models.set('')
+        # self.model_name.set(os.path.basename(os.path.normcase(self.file.name)))
+        self.model_name.set(Path(self.file.name).stem)
 
     def create_model(self):
         # think how to make use of picling\unpickling
