@@ -4,7 +4,7 @@ This module contains all the logic needed to build the program's GUI.
 """
 import fnd
 import pickle
-#import os.path
+import os
 
 from tkinter import *
 from tkinter import ttk
@@ -300,6 +300,8 @@ class FakeDetector:
 
 
 if __name__ == '__main__':
+    if not os.path.exists(path_to_check:='./models'):
+        os.makedirs(path_to_check)
     root = Tk()
     FakeDetector(root)
     root.mainloop()
