@@ -2,6 +2,7 @@
 
 This module contains all the logic needed to build the program's GUI.
 """
+
 import fnd
 import pickle
 import os
@@ -100,13 +101,16 @@ class FakeDetector:
             row=0,
             sticky=S)
 
-        if len(dir_list:=os.listdir('./models')) != 0:
+        if len(dir_list := os.listdir('./models')) != 0:
             if 'basic.pickle' in dir_list:
-                self.unpickle_model('./models/basic.pickle') # meh
+                self.unpickle_model('./models/basic.pickle')  # meh
             else:
-                self.unpickle_model('./models/' + dir_list[0]) # have to check for exceptions down below
+                # have to check for exceptions down below
+                self.unpickle_model('./models/' + dir_list[0])
         else:
-            messagebox.showwarning(title='No models', message='No models detected. Create a model to use the app')
+            messagebox.showwarning(
+                title='No models',
+                message='No models detected. Create a model to use the app')
 
         # self.update_padding(self.mainframe)
 
@@ -170,12 +174,21 @@ class FakeDetector:
             self.selected_model = StringVar()
             self.cb_models = ttk.Combobox(
                 self.labelfr_advanced,
-                values=[os.path.splitext(file_name)[0] for file_name in os.listdir('./models')], # maybe rework in case i need to check the directory in several places? # should i also use lambda? # should update after each click on update button
+                # maybe rework in case i need to check the directory in several
+                # places? # should i also use lambda? # should update after
+                # each click on update button
+                values=[os.path.splitext(file_name)[0]
+                        for file_name in os.listdir('./models')],
                 state='readonly', textvariable=self.selected_model)
             self.cb_models.grid(
                 column=0,
                 row=3)
-            self.cb_models.bind('<<ComboboxSelected>>', lambda e: self.unpickle_model('./models/' + self.selected_model.get() + '.pickle')) # test without lambda for interest # no need to put self in?
+            self.cb_models.bind(
+                '<<ComboboxSelected>>',
+                lambda e: self.unpickle_model(
+                    './models/' +
+                    self.selected_model.get() +
+                    '.pickle'))  # test without lambda for interest # no need to put self in?
             ttk.Label(
                 self.labelfr_advanced,
                 text='Accuracy:').grid(
@@ -209,7 +222,61 @@ class FakeDetector:
                 column=0,
                 row=0)
             self.model_name = StringVar()
-            ttk.Entry(self.labelfr_options, textvariable=self.model_name).grid(column=0, row=1)
+            ttk.Entry(
+                self.labelfr_options,
+                textvariable=self.model_name).grid(
+                column=0,
+                row=1)
+            ttk.Label(
+                self.labelfr_options,
+                text='Classifier:').grid(
+                column=1,
+                row=0)
+            self.cb_classifier = StringVar()
+            ttk.Combobox(
+                self.labelfr_options,
+                textvariable=self.cb_classifier,
+                values=(
+                    'Passive Aggressive Classifier',
+                    'Bayes'),
+                state='readonly').grid(
+                column=1,
+                row=1)
+            ttk.Label(
+                self.labelfr_options,
+                text='Test Size:').grid(
+                column=0,
+                row=2)
+            ttk.Label(
+                self.labelfr_options,
+                text='Train Size:').grid(
+                column=0,
+                row=3)
+            self.spin_test = DoubleVar()
+            self.spin_test.set(0.25)
+            # change readonly to validation
+            ttk.Spinbox(
+                self.labelfr_options,
+                from_=0.0,
+                to=1.0,
+                textvariable=self.spin_test,
+                increment=0.05,
+                format='%.2f',
+                state='readonly').grid(
+                column=1,
+                row=2)
+            self.spin_train = DoubleVar()
+            self.spin_train.set(0.75)
+            ttk.Spinbox(
+                self.labelfr_options,
+                from_=0.0,
+                to=1.0,
+                textvariable=self.spin_train,
+                increment=0.05,
+                format='%.2f',
+                state='readonly').grid(
+                column=1,
+                row=3)
             ttk.Button(
                 self.labelfr_advanced,
                 text='Create new...',  # maybe just Create new model?
@@ -250,19 +317,29 @@ class FakeDetector:
         self.model_name.set(Path(self.file.name).stem)
 
     def create_model(self):
+        if self.spin_test.get() + self.spin_train.get() != 1.0:
+            if messagebox.askyesno(
+                    title='Potential mistake',
+                    message='It is recommended that Train Size and Test Size be set to give 1.0 in sum. Are you sure that you want to continue?',
+                    default='no') is False:
+                return
         # think how to make use of picling\unpickling
-        # if click update again -- error IO on closed file -- 
+        # if click update again -- error IO on closed file --
         # should just create models from pickle
         self.model = fnd.PAClassifier(self.file)
         self.file.close()  # check if closed -- maybe no need to close
         # should do it with combobox
         # make score into a property? # print(f'Accuracy:
         # {round(score*100,2)}%') user friendliness
-        #self.accuracy.set(self.model.score)
-        #self.stats.set(self.model.matrix)
+        # self.accuracy.set(self.model.score)
+        # self.stats.set(self.model.matrix)
         self.set_labels(self.model)
-        self.pickle_model(self.model, './models/' + self.model_name.get() + '.pickle')
-    
+        self.pickle_model(
+            self.model,
+            './models/' +
+            self.model_name.get() +
+            '.pickle')
+
     def pickle_model(self, model, file_path):
         with open(file_path, 'wb') as f:
             pickle.dump(model, f, pickle.HIGHEST_PROTOCOL)
@@ -318,7 +395,8 @@ class FakeDetector:
 
 
 if __name__ == '__main__':
-    if not os.path.exists(path_to_check:='./models'): # check if works on windows
+    if not os.path.exists(
+            path_to_check := './models'):  # check if works on windows
         os.makedirs(path_to_check)
     root = Tk()
     FakeDetector(root)
