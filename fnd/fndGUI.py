@@ -258,8 +258,9 @@ class FakeDetector:
         # should do it with combobox
         # make score into a property? # print(f'Accuracy:
         # {round(score*100,2)}%') user friendliness
-        self.accuracy.set(self.model.score)
-        self.stats.set(self.model.matrix)
+        #self.accuracy.set(self.model.score)
+        #self.stats.set(self.model.matrix)
+        self.set_labels(self.model)
         self.pickle_model(self.model, './models/' + self.model_name.get() + '.pickle')
     
     def pickle_model(self, model, file_path):
@@ -269,6 +270,15 @@ class FakeDetector:
     def unpickle_model(self, file_path):
         with open(file_path, 'rb') as f:
             self.model = pickle.load(f)
+        self.set_labels(self.model)
+
+    def set_labels(self, model):
+        if self.interface_mode.get() == 'advanced':
+            self.accuracy.set(model.score)
+            self.stats.set(model.matrix)
+            if self.model_name.get() == '':
+                self.model_name.set(self.selected_model.get())
+            self.current_model.set(self.model_name.get())
 
     def show_about(self, root):
         # Potentially replace with OOP
