@@ -3,6 +3,7 @@
 This module contains all the logic needed to build the program's GUI.
 """
 import fnd
+import pickle
 #import os.path
 
 from tkinter import *
@@ -251,6 +252,15 @@ class FakeDetector:
         # {round(score*100,2)}%') user friendliness
         self.accuracy.set(self.model.score)
         self.stats.set(self.model.matrix)
+        self.pickle_model(self.model, './models/' + self.model_name.get() + '.pickle')
+    
+    def pickle_model(self, model, file_path):
+        with open(file_path, 'wb') as f:
+            pickle.dump(model, f, pickle.HIGHEST_PROTOCOL)
+
+    def unpickle_model(self, file_path):
+        with open(file_path, 'rb') as f:
+            self.model = pickle.load(f)
 
     def show_about(self, root):
         # Potentially replace with OOP
