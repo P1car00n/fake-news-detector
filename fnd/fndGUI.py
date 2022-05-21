@@ -100,6 +100,14 @@ class FakeDetector:
             row=0,
             sticky=S)
 
+        if len(dir_list:=os.listdir('./models')) != 0:
+            if 'basic.pickle' in dir_list:
+                self.unpickle_model('./models/basic.pickle') # meh
+            else:
+                self.unpickle_model('./models/' + dir_list[0]) # have to check for exceptions down below
+        else:
+            messagebox.showwarning(title='No models', message='No models detected. Create a model to use the app')
+
         # self.update_padding(self.mainframe)
 
         # Temporarily
@@ -159,15 +167,15 @@ class FakeDetector:
                 text='Choose a model:').grid(
                 column=0,
                 row=2)
+            self.selected_model = StringVar()
             self.cb_models = ttk.Combobox(
                 self.labelfr_advanced,
-                values=(
-                    'Placeholder 1',
-                    'Placeholder 2'),
-                state='readonly')
+                values=[os.path.splitext(file_name)[0] for file_name in os.listdir('./models')], # maybe rework in case i need to check the directory in several places? # should i also use lambda? # should update after each click on update button
+                state='readonly', textvariable=self.selected_model)
             self.cb_models.grid(
                 column=0,
                 row=3)
+            self.cb_models.bind('<<ComboboxSelected>>', lambda e: self.unpickle_model('./models/' + self.selected_model.get() + '.pickle')) # test without lambda for interest # no need to put self in?
             ttk.Label(
                 self.labelfr_advanced,
                 text='Accuracy:').grid(
@@ -300,7 +308,7 @@ class FakeDetector:
 
 
 if __name__ == '__main__':
-    if not os.path.exists(path_to_check:='./models'):
+    if not os.path.exists(path_to_check:='./models'): # check if works on windows
         os.makedirs(path_to_check)
     root = Tk()
     FakeDetector(root)
