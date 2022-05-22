@@ -277,6 +277,35 @@ class FakeDetector:
                 state='readonly').grid(
                 column=1,
                 row=3)
+            ttk.Label(
+                self.labelfr_options,
+                text='Max Iterations:').grid(
+                column=0,
+                row=4)
+            ttk.Label(
+                self.labelfr_options,
+                text='Early Stopping:').grid(
+                column=0,
+                row=5)
+            self.spin_iter = IntVar()
+            self.spin_iter.set(1000)
+            ttk.Spinbox(
+                self.labelfr_options,
+                from_=0,
+                to=10000,
+                textvariable=self.spin_iter,
+                increment=100).grid(
+                column=1,
+                row=4)  # add progress bar for big numbers
+            self.spin_stopping = BooleanVar()
+            self.spin_stopping.set(False)
+            ttk.Checkbutton(
+                self.labelfr_options,
+                variable=self.spin_stopping,
+                onvalue=True,
+                offvalue=False).grid(
+                column=1,
+                row=5)
             ttk.Button(
                 self.labelfr_advanced,
                 text='Create new...',  # maybe just Create new model?
@@ -309,7 +338,7 @@ class FakeDetector:
 
     def get_filename(self):
         self.file = filedialog.askopenfile(
-            filetypes=[("CSV files", ".csv"), ("all files", "*.*")]) # check if cancelled
+            filetypes=[("CSV files", ".csv"), ("all files", "*.*")])  # check if cancelled
         # use regex to propose a default file name
         self.current_model.set(self.file.name + ' <Unsaved>')  # make red
         self.cb_models.set('')
@@ -326,7 +355,12 @@ class FakeDetector:
         # think how to make use of picling\unpickling
         # if click update again -- error IO on closed file --
         # should just create models from pickle
-        self.model = fnd.PAClassifier(self.file, test_size=self.spin_test.get(), train_size=self.spin_train.get())
+        self.model = fnd.PAClassifier(
+            self.file,
+            test_size=self.spin_test.get(),
+            train_size=self.spin_train.get(),
+            max_iter=self.spin_iter.get(),
+            early_stopping=self.spin_stopping.get())
         self.file.close()  # check if closed -- maybe no need to close
         # should do it with combobox
         # make score into a property? # print(f'Accuracy:
@@ -358,6 +392,8 @@ class FakeDetector:
             self.current_model.set(self.model_name.get())
             self.spin_test.set(model.test_size)
             self.spin_train.set(model.train_size)
+            self.spin_iter.set(model.max_iter)
+            self.spin_stopping.set(model.early_stopping)
 
     def show_about(self, root):
         # Potentially replace with OOP
