@@ -309,7 +309,7 @@ class FakeDetector:
 
     def get_filename(self):
         self.file = filedialog.askopenfile(
-            filetypes=[("CSV files", ".csv"), ("all files", "*.*")])
+            filetypes=[("CSV files", ".csv"), ("all files", "*.*")]) # check if cancelled
         # use regex to propose a default file name
         self.current_model.set(self.file.name + ' <Unsaved>')  # make red
         self.cb_models.set('')
@@ -326,7 +326,7 @@ class FakeDetector:
         # think how to make use of picling\unpickling
         # if click update again -- error IO on closed file --
         # should just create models from pickle
-        self.model = fnd.PAClassifier(self.file)
+        self.model = fnd.PAClassifier(self.file, test_size=self.spin_test.get(), train_size=self.spin_train.get())
         self.file.close()  # check if closed -- maybe no need to close
         # should do it with combobox
         # make score into a property? # print(f'Accuracy:
@@ -356,6 +356,8 @@ class FakeDetector:
             if self.model_name.get() == '':
                 self.model_name.set(self.selected_model.get())
             self.current_model.set(self.model_name.get())
+            self.spin_test.set(model.test_size)
+            self.spin_train.set(model.train_size)
 
     def show_about(self, root):
         # Potentially replace with OOP

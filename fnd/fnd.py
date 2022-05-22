@@ -6,14 +6,21 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix
 
+#test
+import inspect
+
 
 class Detector:
 
-    def __init__(self, data, column_title='text') -> None:
+    def __init__(self, data, test_size='0.25', train_size='0.75', column_title='text') -> None:
+        # is there a better way to inspect these? maybe convert to propety at least?
+        self.test_size = test_size
+        self.train_size = train_size
+
         self.data_frame = pd.read_csv(data)
         self.labels = self.data_frame.label
         x_train, x_test, self.y_train, self.y_test = train_test_split(
-            self.data_frame[column_title], self.labels)
+            self.data_frame[column_title], self.labels, test_size=self.test_size, train_size=self.train_size)
         self.tfidf_vectorizer = TfidfVectorizer(stop_words='english')
         self.tfidf_train = self.tfidf_vectorizer.fit_transform(x_train)
         self.tfidf_test = self.tfidf_vectorizer.transform(x_test)
@@ -28,8 +35,8 @@ class Detector:
 
 class PAClassifier(Detector):
 
-    def __init__(self, data, column_title='text') -> None:
-        Detector.__init__(self, data, column_title)
+    def __init__(self, data, test_size='0.25', train_size='0.75', column_title='text') -> None:
+        Detector.__init__(self, data, test_size, train_size, column_title) # meh
         self.pac = PassiveAggressiveClassifier()  # add max iter at a later point
         self.pac.fit(self.tfidf_train, self.y_train)
         self.y_pred = self.pac.predict(self.tfidf_test)
