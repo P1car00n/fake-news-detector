@@ -176,9 +176,9 @@ class FakeDetector:
                 self.labelfr_advanced,
                 # maybe rework in case i need to check the directory in several
                 # places? # should i also use lambda? # should update after
-                # each click on update button
-                values=[os.path.splitext(file_name)[0]
-                        for file_name in os.listdir('./models')],
+                # each click on update button # for now have to restart the
+                # program
+                values=self.get_models(),
                 state='readonly', textvariable=self.selected_model)
             self.cb_models.grid(
                 column=0,
@@ -232,16 +232,22 @@ class FakeDetector:
                 text='Classifier:').grid(
                 column=1,
                 row=0)
-            self.cb_classifier = StringVar()
-            ttk.Combobox(
+            self.selected_classifier = StringVar()
+            self.selected_classifier.set('Passive Aggressive Classifier')
+            self.cb_classifier = ttk.Combobox(
                 self.labelfr_options,
-                textvariable=self.cb_classifier,
+                textvariable=self.selected_classifier,
                 values=(
                     'Passive Aggressive Classifier',
-                    'Bayes'),
-                state='readonly').grid(
+                    'Multinomial Naive Bayes'),
+                state='readonly')
+            self.cb_classifier.grid(
                 column=1,
                 row=1)
+            self.cb_classifier.bind(
+                '<<ComboboxSelected>>',
+                lambda e: self.disable_widgets(
+                    self.selected_classifier.get()))
             ttk.Label(
                 self.labelfr_options,
                 text='Test Size:').grid(
@@ -289,21 +295,23 @@ class FakeDetector:
                 row=5)
             self.spin_iter = IntVar()
             self.spin_iter.set(1000)
-            ttk.Spinbox(
+            self.sb_iter = ttk.Spinbox(
                 self.labelfr_options,
                 from_=0,
                 to=10000,
                 textvariable=self.spin_iter,
-                increment=100).grid(
+                increment=100)
+            self.sb_iter.grid(
                 column=1,
                 row=4)  # add progress bar for big numbers
-            self.spin_stopping = BooleanVar()
+            self.spin_stopping = BooleanVar()  # not a spinbox: rename
             self.spin_stopping.set(False)
-            ttk.Checkbutton(
+            self.ckbtn_stopping = ttk.Checkbutton(
                 self.labelfr_options,
                 variable=self.spin_stopping,
                 onvalue=True,
-                offvalue=False).grid(
+                offvalue=False)
+            self.ckbtn_stopping.grid(
                 column=1,
                 row=5)
             ttk.Button(
@@ -336,6 +344,18 @@ class FakeDetector:
         elif mode == 'simple':
             self.labelfr_advanced.destroy()
 
+    def get_models(self):
+        return [os.path.splitext(file_name)[0]
+                for file_name in os.listdir('./models')]
+
+    def disable_widgets(self, classifier):
+        if classifier == 'Multinomial Naive Bayes':
+            self.ckbtn_stopping['state'] = 'disabled'
+            self.sb_iter['state'] = 'disabled'
+        else:
+            self.ckbtn_stopping['state'] = 'enabled'
+            self.sb_iter['state'] = 'enabled'
+
     def get_filename(self):
         self.file = filedialog.askopenfile(
             filetypes=[("CSV files", ".csv"), ("all files", "*.*")])  # check if cancelled
@@ -352,15 +372,21 @@ class FakeDetector:
                     message='It is recommended that Train Size and Test Size be set to give 1.0 in sum. Are you sure that you want to continue?',
                     default='no') is False:
                 return
-        # think how to make use of picling\unpickling
-        # if click update again -- error IO on closed file --
-        # should just create models from pickle
-        self.model = fnd.PAClassifier(
-            self.file,
-            test_size=self.spin_test.get(),
-            train_size=self.spin_train.get(),
-            max_iter=self.spin_iter.get(),
-            early_stopping=self.spin_stopping.get())
+        if self.selected_classifier.get() == 'Multinomial Naive Bayes':
+            self.model = fnd.MultiNB(
+                self.file,
+                test_size=self.spin_test.get(),
+                train_size=self.spin_train.get())
+        elif self.selected_classifier.get() == 'Passive Aggressive Classifier':
+            # think how to make use of picling\unpickling
+            # if click update again -- error IO on closed file --
+            # should just create models from pickle
+            self.model = fnd.PAClassifier(
+                self.file,
+                test_size=self.spin_test.get(),
+                train_size=self.spin_train.get(),
+                max_iter=self.spin_iter.get(),
+                early_stopping=self.spin_stopping.get())
         self.file.close()  # check if closed -- maybe no need to close
         # should do it with combobox
         # make score into a property? # print(f'Accuracy:
@@ -373,6 +399,8 @@ class FakeDetector:
             './models/' +
             self.model_name.get() +
             '.pickle')
+
+        self.cb_models['values'] = self.get_models()
 
     def pickle_model(self, model, file_path):
         with open(file_path, 'wb') as f:
@@ -392,8 +420,15 @@ class FakeDetector:
             self.current_model.set(self.model_name.get())
             self.spin_test.set(model.test_size)
             self.spin_train.set(model.train_size)
-            self.spin_iter.set(model.max_iter)
-            self.spin_stopping.set(model.early_stopping)
+            self.selected_classifier.set(model.classifier)
+            # MIGHT NOT WORK WITH BAYES
+            if model.classifier == 'Passive Aggressive Classifier':
+                self.spin_iter.set(model.max_iter)
+                self.spin_stopping.set(model.early_stopping)
+            else:
+                assert 'Implement me'
+                # disable max iter and early stop
+                self.disable_widgets(model.classifier)
 
     def show_about(self, root):
         # Potentially replace with OOP
@@ -444,4 +479,4 @@ if __name__ == '__main__':
 # appears not directly under the button 'Analyse'. add (decent) resizing support
 # for the main window. Check macos support. Put grid statements separately?
 # Add paste to the textbox? Theming support? Contextual menu? Add better
-# docstrings?
+# docstrings? Do away with hacky code

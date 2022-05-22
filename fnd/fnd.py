@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.linear_model import PassiveAggressiveClassifier
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, confusion_matrix
 
 
@@ -55,6 +56,8 @@ class PAClassifier(Detector):
             train_size,
             column_title)  # meh
 
+        self.classifier = 'Passive Aggressive Classifier'  # dirty
+
         self.max_iter = max_iter
         self.early_stopping = early_stopping
 
@@ -75,6 +78,37 @@ class PAClassifier(Detector):
 
     def predict(self, text):
         return Detector.predict(self, self.pac, self.tfidf_vectorizer, text)
+
+
+class MultiNB(Detector):
+    def __init__(
+            self,
+            data,
+            test_size=0.25,
+            train_size=0.75,
+            column_title='text') -> None:
+        Detector.__init__(
+            self,
+            data,
+            test_size,
+            train_size,
+            column_title)  # meh
+        self.classifier = 'Multinomial Naive Bayes'  # dirty
+
+        # duplication of functionality: should rework
+        self.mnb = MultinomialNB()
+        self.mnb.fit(self.tfidf_train, self.y_train)
+        self.y_pred = self.mnb.predict(self.tfidf_test)
+        # duplicating
+        self.score = accuracy_score(self.y_test, self.y_pred)
+        # print(f'Accuracy: {round(score*100,2)}%')
+        # print(confusion_matrix(y_test, y_pred, labels=['FAKE', 'REAL']))
+        self.matrix = confusion_matrix(
+            self.y_test, self.y_pred, labels=[
+                'FAKE', 'REAL'])  # Make more user friendly?
+
+    def predict(self, text):
+        return Detector.predict(self, self.mnb, self.tfidf_vectorizer, text)
 
 
 # Donald Trump says UFO is real
