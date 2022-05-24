@@ -6,6 +6,8 @@ This module contains all the logic needed to build the program's GUI.
 import fnd
 import pickle
 import os
+from multiprocessing.pool import Pool
+import threading
 
 from tkinter import *
 from tkinter import ttk
@@ -335,7 +337,7 @@ class FakeDetector:
             ttk.Button(
                 self.labelfr_advanced,
                 text='Update\\save',
-                command=self.create_model).grid(
+                command=self.thread_helper).grid(
                 column=4,
                 row=4,
                 pady=(
@@ -365,6 +367,25 @@ class FakeDetector:
         # self.model_name.set(os.path.basename(os.path.normcase(self.file.name)))
         self.model_name.set(Path(self.file.name).stem)
 
+    def thread_helper(self):
+       # with Pool() as p:
+        #    p.apply(func=self.create_model)
+        # works but multiprocessing would be better
+        t = threading.Thread(target=self.create_model)
+        t.start()
+        #t.join()
+
+    #def multiprocess_model(self):
+    #    # use queue? # add a progress bar
+    #    p = multiprocessing.Process(target=self.create_model)
+    #    p.start()
+    #    p.join()
+    #    #p.close()
+        
+    def update_after_create(self):
+        self.set_labels(self.model)
+        self.cb_models['values'] = self.get_models()
+
     def create_model(self):
         if self.spin_test.get() + self.spin_train.get() != 1.0:
             if messagebox.askyesno(
@@ -393,14 +414,14 @@ class FakeDetector:
         # {round(score*100,2)}%') user friendliness
         # self.accuracy.set(self.model.score)
         # self.stats.set(self.model.matrix)
-        self.set_labels(self.model)
+        #self.set_labels(self.model)
         self.pickle_model(
             self.model,
             './models/' +
             self.model_name.get() +
             '.pickle')
-
-        self.cb_models['values'] = self.get_models()
+        self.update_after_create()
+        #self.cb_models['values'] = self.get_models()
 
     def pickle_model(self, model, file_path):
         with open(file_path, 'wb') as f:

@@ -166,3 +166,4 @@ class MultiNB(Detector):
 #
 #
 # TODO: rewrite with OOP; add naive baes option?
+# Notes: cx_freeze was pita to install, whereas pyinstaller was pita to use. Cxfreeze didn't work
