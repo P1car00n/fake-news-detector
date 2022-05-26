@@ -434,7 +434,7 @@ class FakeDetector:
 
     def set_labels(self, model):
         if self.interface_mode.get() == 'advanced':
-            self.accuracy.set(model.score)
+            self.accuracy.set(round(model.score*100,2))
             self.stats.set(model.matrix)
             if self.model_name.get() == '':
                 self.model_name.set(self.selected_model.get())
