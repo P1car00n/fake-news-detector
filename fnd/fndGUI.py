@@ -327,8 +327,8 @@ class FakeDetector:
                     0))
             ttk.Button(
                 self.labelfr_advanced,
-                text='Export as...',  # probably better just export
-                command=lambda: print('i work')).grid(
+                text='Export',
+                command=self.export_model).grid(
                 column=3,
                 row=4,
                 pady=(
@@ -358,6 +358,18 @@ class FakeDetector:
             self.ckbtn_stopping['state'] = 'enabled'
             self.sb_iter['state'] = 'enabled'
 
+    def export_model(self):
+        self.pickle_model(
+            self.model,
+            filedialog.asksaveasfilename(
+                initialfile='myModel.pickle',
+                initialdir='./models',
+                filetypes=[
+                    ("pickle files",
+                     ".pickle"),
+                    ("all files",
+                     "*.*")]))  # file type; more flair
+
     def get_filename(self):
         self.file = filedialog.askopenfile(
             filetypes=[("CSV files", ".csv"), ("all files", "*.*")])  # check if cancelled
@@ -373,15 +385,15 @@ class FakeDetector:
         # works but multiprocessing would be better
         t = threading.Thread(target=self.create_model)
         t.start()
-        #t.join()
+        # t.join()
 
-    #def multiprocess_model(self):
+    # def multiprocess_model(self):
     #    # use queue? # add a progress bar
     #    p = multiprocessing.Process(target=self.create_model)
     #    p.start()
     #    p.join()
     #    #p.close()
-        
+
     def update_after_create(self):
         self.set_labels(self.model)
         self.cb_models['values'] = self.get_models()
@@ -414,7 +426,7 @@ class FakeDetector:
         # {round(score*100,2)}%') user friendliness
         # self.accuracy.set(self.model.score)
         # self.stats.set(self.model.matrix)
-        #self.set_labels(self.model)
+        # self.set_labels(self.model)
         self.pickle_model(
             self.model,
             './models/' +
@@ -434,7 +446,7 @@ class FakeDetector:
 
     def set_labels(self, model):
         if self.interface_mode.get() == 'advanced':
-            self.accuracy.set(round(model.score*100,2))
+            self.accuracy.set(round(model.score * 100, 2))
             self.stats.set(model.matrix)
             if self.model_name.get() == '':
                 self.model_name.set(self.selected_model.get())
