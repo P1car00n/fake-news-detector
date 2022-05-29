@@ -10,7 +10,7 @@ class Detector:
 
     def __init__(
             self,
-            data,
+            data, classifier,
             test_size=0.25,
             train_size=0.75,
             column_title='text') -> None:
@@ -21,6 +21,8 @@ class Detector:
         # self.max_iter = max_iter # duplicating?
         #self.early_stopping = early_stopping
 
+        self.classifier = classifier
+
         self.data_frame = pd.read_csv(data)
         self.labels = self.data_frame.label
         x_train, x_test, self.y_train, self.y_test = train_test_split(
@@ -28,6 +30,13 @@ class Detector:
         self.tfidf_vectorizer = TfidfVectorizer(stop_words='english')
         self.tfidf_train = self.tfidf_vectorizer.fit_transform(x_train)
         self.tfidf_test = self.tfidf_vectorizer.transform(x_test)
+
+        self.classifier.fit(self.tfidf_train, self.y_train)
+        self.y_pred = self.classifier.predict(self.tfidf_test)
+        self.score = accuracy_score(self.y_test, self.y_pred)
+        self.matrix = confusion_matrix(
+            self.y_test, self.y_pred, labels=[
+                'FAKE', 'REAL'])  # Make more user friendly?
 
     def predict(self, classifier, vectoriser, text):
         # using the same vectoriser?
@@ -47,14 +56,6 @@ class PAClassifier(Detector):
             max_iter=1000,
             early_stopping=False,
             column_title='text') -> None:
-        Detector.__init__(
-            self,
-            data,
-            test_size,
-            train_size,
-            column_title)  # meh
-
-        self.classifier = 'Passive Aggressive Classifier'  # dirty
 
         self.max_iter = max_iter
         self.early_stopping = early_stopping
@@ -62,17 +63,15 @@ class PAClassifier(Detector):
         self.pac = PassiveAggressiveClassifier(
             max_iter=self.max_iter,
             early_stopping=self.early_stopping)  # add max iter at a later point
-        self.pac.fit(self.tfidf_train, self.y_train)
-        self.y_pred = self.pac.predict(self.tfidf_test)
-        # self.score wasn't visible until i added self tp y_pred, probably
-        # bacause instances don't have access to variables created inside
-        # functions
-        self.score = accuracy_score(self.y_test, self.y_pred)
-        # print(f'Accuracy: {round(score*100,2)}%')
-        # print(confusion_matrix(y_test, y_pred, labels=['FAKE', 'REAL']))
-        self.matrix = confusion_matrix(
-            self.y_test, self.y_pred, labels=[
-                'FAKE', 'REAL'])  # Make more user friendly?
+
+        Detector.__init__(
+            self,
+            data, self.pac,
+            test_size,
+            train_size,
+            column_title)  # meh
+
+        # self.classifier = 'Passive Aggressive Classifier'  # dirty
 
     def predict(self, text):
         return Detector.predict(self, self.pac, self.tfidf_vectorizer, text)
@@ -85,25 +84,16 @@ class MultiNB(Detector):
             test_size=0.25,
             train_size=0.75,
             column_title='text') -> None:
+
+        self.mnb = MultinomialNB()
+
         Detector.__init__(
             self,
-            data,
+            data, self.mnb,
             test_size,
             train_size,
             column_title)  # meh
-        self.classifier = 'Multinomial Naive Bayes'  # dirty
-
-        # duplication of functionality: should rework
-        self.mnb = MultinomialNB()
-        self.mnb.fit(self.tfidf_train, self.y_train)
-        self.y_pred = self.mnb.predict(self.tfidf_test)
-        # duplicating
-        self.score = accuracy_score(self.y_test, self.y_pred)
-        # print(f'Accuracy: {round(score*100,2)}%')
-        # print(confusion_matrix(y_test, y_pred, labels=['FAKE', 'REAL']))
-        self.matrix = confusion_matrix(
-            self.y_test, self.y_pred, labels=[
-                'FAKE', 'REAL'])  # Make more user friendly?
+        # self.classifier = 'Multinomial Naive Bayes'  # dirty
 
     def predict(self, text):
         return Detector.predict(self, self.mnb, self.tfidf_vectorizer, text)
