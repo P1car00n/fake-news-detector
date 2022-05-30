@@ -45,6 +45,12 @@ class Detector:
         t_pred = classifier.predict(vec_newtest)
         return t_pred
 
+    def __getattr__(self, attr):  # fix for Pickle
+        """Return None for all unknown attributes and raise an exception for all unknown dunder-attributes"""
+        if attr.startswith('__') and attr.endswith('__'):
+            raise AttributeError
+        return None
+
 
 class PAClassifier(Detector):
 
@@ -71,8 +77,6 @@ class PAClassifier(Detector):
             train_size,
             column_title)  # meh
 
-        # self.classifier = 'Passive Aggressive Classifier'  # dirty
-
     def predict(self, text):
         return Detector.predict(self, self.pac, self.tfidf_vectorizer, text)
 
@@ -83,7 +87,11 @@ class MultiNB(Detector):
             data,
             test_size=0.25,
             train_size=0.75,
-            column_title='text') -> None:
+            column_title='text', **kwargs) -> None:
+
+        # didn't find a better way rather than putting these additional arguments in each class. think of solutions
+        #self.max_iter = max_iter
+        #self.early_stopping = early_stopping
 
         self.mnb = MultinomialNB()
 
@@ -93,7 +101,6 @@ class MultiNB(Detector):
             test_size,
             train_size,
             column_title)  # meh
-        # self.classifier = 'Multinomial Naive Bayes'  # dirty
 
     def predict(self, text):
         return Detector.predict(self, self.mnb, self.tfidf_vectorizer, text)

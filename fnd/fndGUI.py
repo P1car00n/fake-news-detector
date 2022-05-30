@@ -234,14 +234,17 @@ class FakeDetector:
                 text='Classifier:').grid(
                 column=1,
                 row=0)
+            self.CLASSIFIER_MAPPING = {
+                'Passive Aggressive Classifier': fnd.PAClassifier,
+                'Multinomial Naive Bayes': fnd.MultiNB}
+            self.CLASSIFIER_ITEMS = sorted(self.CLASSIFIER_MAPPING.keys())
             self.selected_classifier = StringVar()
-            self.selected_classifier.set('Passive Aggressive Classifier')
+            self.selected_classifier.set(
+                self.CLASSIFIER_ITEMS[0])  # might want to set to PAC
             self.cb_classifier = ttk.Combobox(
                 self.labelfr_options,
                 textvariable=self.selected_classifier,
-                values=(
-                    'Passive Aggressive Classifier',
-                    'Multinomial Naive Bayes'),
+                values=self.CLASSIFIER_ITEMS,
                 state='readonly')
             self.cb_classifier.grid(
                 column=1,
@@ -249,7 +252,7 @@ class FakeDetector:
             self.cb_classifier.bind(
                 '<<ComboboxSelected>>',
                 lambda e: self.disable_widgets(
-                    self.selected_classifier.get()))
+                    self.CLASSIFIER_MAPPING[self.selected_classifier.get()]))
             ttk.Label(
                 self.labelfr_options,
                 text='Test Size:').grid(
@@ -351,12 +354,14 @@ class FakeDetector:
                 for file_name in os.listdir('./models')]
 
     def disable_widgets(self, classifier):
-        if classifier == 'Multinomial Naive Bayes':
-            self.ckbtn_stopping['state'] = 'disabled'
-            self.sb_iter['state'] = 'disabled'
-        else:
+        if isinstance(
+                classifier,
+                fnd.PAClassifier) or classifier == fnd.PAClassifier:
             self.ckbtn_stopping['state'] = 'enabled'
             self.sb_iter['state'] = 'enabled'
+        else:
+            self.ckbtn_stopping['state'] = 'disabled'
+            self.sb_iter['state'] = 'disabled'
 
     def export_model(self):
         self.pickle_model(
@@ -405,21 +410,25 @@ class FakeDetector:
                     message='It is recommended that Train Size and Test Size be set to give 1.0 in sum. Are you sure that you want to continue?',
                     default='no') is False:
                 return
-        if self.selected_classifier.get() == 'Multinomial Naive Bayes':
-            self.model = fnd.MultiNB(
-                self.file,
-                test_size=self.spin_test.get(),
-                train_size=self.spin_train.get())
-        elif self.selected_classifier.get() == 'Passive Aggressive Classifier':
-            # think how to make use of picling\unpickling
-            # if click update again -- error IO on closed file --
-            # should just create models from pickle
-            self.model = fnd.PAClassifier(
-                self.file,
-                test_size=self.spin_test.get(),
-                train_size=self.spin_train.get(),
-                max_iter=self.spin_iter.get(),
-                early_stopping=self.spin_stopping.get())
+
+        self.model = self.CLASSIFIER_MAPPING[self.selected_classifier.get()](self.file, test_size=self.spin_test.get(
+        ), train_size=self.spin_train.get(), max_iter=self.spin_iter.get(), early_stopping=self.spin_stopping.get())
+
+        # if self.selected_classifier.get() == 'Multinomial Naive Bayes':
+        #    self.model = fnd.MultiNB(
+        #        self.file,
+        #        test_size=self.spin_test.get(),
+        #        train_size=self.spin_train.get())
+        # elif self.selected_classifier.get() == 'Passive Aggressive Classifier':
+        #    # think how to make use of picling\unpickling
+        #    # if click update again -- error IO on closed file --
+        #    # should just create models from pickle
+        #    self.model = fnd.PAClassifier(
+        #        self.file,
+        #        test_size=self.spin_test.get(),
+        #        train_size=self.spin_train.get(),
+        #        max_iter=self.spin_iter.get(),
+        #        early_stopping=self.spin_stopping.get())
         self.file.close()  # check if closed -- maybe no need to close
         # should do it with combobox
         # make score into a property? # print(f'Accuracy:
@@ -454,14 +463,15 @@ class FakeDetector:
             self.spin_test.set(model.test_size)
             self.spin_train.set(model.train_size)
             self.selected_classifier.set(model.classifier)
-            # MIGHT NOT WORK WITH BAYES
-            if model.classifier == 'Passive Aggressive Classifier':
+
+            if isinstance(model, fnd.PAClassifier):
+                # enable max iter and early stopping
+                self.disable_widgets(model)
                 self.spin_iter.set(model.max_iter)
                 self.spin_stopping.set(model.early_stopping)
             else:
-                assert 'Implement me'
                 # disable max iter and early stop
-                self.disable_widgets(model.classifier)
+                self.disable_widgets(model)
 
     def show_about(self, root):
         # Potentially replace with OOP
