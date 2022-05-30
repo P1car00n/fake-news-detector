@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import PassiveAggressiveClassifier
+from sklearn.linear_model import PassiveAggressiveClassifier, Perceptron
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, confusion_matrix
 
@@ -18,8 +18,6 @@ class Detector:
         # least?
         self.test_size = test_size
         self.train_size = train_size
-        # self.max_iter = max_iter # duplicating?
-        #self.early_stopping = early_stopping
 
         self.classifier = classifier
 
@@ -38,11 +36,11 @@ class Detector:
             self.y_test, self.y_pred, labels=[
                 'FAKE', 'REAL'])  # Make more user friendly?
 
-    def predict(self, classifier, vectoriser, text):
+    def predict(self, text):
         # using the same vectoriser?
         # list() divides sentences into letters, interesting
-        vec_newtest = vectoriser.transform([text])
-        t_pred = classifier.predict(vec_newtest)
+        vec_newtest = self.tfidf_vectorizer.transform([text])
+        t_pred = self.classifier.predict(vec_newtest)
         return t_pred
 
     def __getattr__(self, attr):  # fix for Pickle
@@ -52,7 +50,31 @@ class Detector:
         return None
 
 
-class PAClassifier(Detector):
+class LinearDetector(Detector):
+    def __init__(
+            self,
+            data, classifier,
+            test_size=0.25,
+            train_size=0.75,
+            max_iter=1000,
+            early_stopping=False,
+            column_title='text') -> None:
+
+        self.max_iter = max_iter
+        self.early_stopping = early_stopping
+
+        Detector.__init__(
+            self,
+            data,
+            classifier(
+                max_iter=self.max_iter,
+                early_stopping=self.early_stopping),
+            test_size,
+            train_size,
+            column_title)
+
+
+class PAClassifier(LinearDetector):
 
     def __init__(
             self,
@@ -63,22 +85,40 @@ class PAClassifier(Detector):
             early_stopping=False,
             column_title='text') -> None:
 
-        self.max_iter = max_iter
-        self.early_stopping = early_stopping
-
-        self.pac = PassiveAggressiveClassifier(
-            max_iter=self.max_iter,
-            early_stopping=self.early_stopping)  # add max iter at a later point
-
-        Detector.__init__(
+        LinearDetector.__init__(
             self,
-            data, self.pac,
+            data, PassiveAggressiveClassifier,
             test_size,
             train_size,
-            column_title)  # meh
+            max_iter,
+            early_stopping,
+            column_title)
 
-    def predict(self, text):
-        return Detector.predict(self, self.pac, self.tfidf_vectorizer, text)
+    def __str__(self) -> str:
+        return 'Passive Aggressive Classifier'
+
+
+class Percept(LinearDetector):
+    def __init__(
+            self,
+            data,
+            test_size=0.25,
+            train_size=0.75,
+            max_iter=1000,
+            early_stopping=False,
+            column_title='text') -> None:
+
+        LinearDetector.__init__(
+            self,
+            data, Perceptron,
+            test_size,
+            train_size,
+            max_iter,
+            early_stopping,
+            column_title)
+
+    def __str__(self) -> str:
+        return 'Perceptron'
 
 
 class MultiNB(Detector):
@@ -89,10 +129,6 @@ class MultiNB(Detector):
             train_size=0.75,
             column_title='text', **kwargs) -> None:
 
-        # didn't find a better way rather than putting these additional arguments in each class. think of solutions
-        #self.max_iter = max_iter
-        #self.early_stopping = early_stopping
-
         self.mnb = MultinomialNB()
 
         Detector.__init__(
@@ -100,7 +136,7 @@ class MultiNB(Detector):
             data, self.mnb,
             test_size,
             train_size,
-            column_title)  # meh
+            column_title)
 
-    def predict(self, text):
-        return Detector.predict(self, self.mnb, self.tfidf_vectorizer, text)
+    def __str__(self) -> str:
+        return 'Multinomial Naive Bayes'

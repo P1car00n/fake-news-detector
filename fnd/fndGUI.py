@@ -236,6 +236,7 @@ class FakeDetector:
                 row=0)
             self.CLASSIFIER_MAPPING = {
                 'Passive Aggressive Classifier': fnd.PAClassifier,
+                'Perceptron': fnd.Percept,
                 'Multinomial Naive Bayes': fnd.MultiNB}
             self.CLASSIFIER_ITEMS = sorted(self.CLASSIFIER_MAPPING.keys())
             self.selected_classifier = StringVar()
@@ -353,10 +354,9 @@ class FakeDetector:
         return [os.path.splitext(file_name)[0]
                 for file_name in os.listdir('./models')]
 
-    def disable_widgets(self, classifier):
-        if isinstance(
-                classifier,
-                fnd.PAClassifier) or classifier == fnd.PAClassifier:
+    def disable_widgets(self, classifier_class):
+        # isinstance(classifier,fnd.LinearDetector) or
+        if issubclass(classifier_class, fnd.LinearDetector):
             self.ckbtn_stopping['state'] = 'enabled'
             self.sb_iter['state'] = 'enabled'
         else:
@@ -462,16 +462,18 @@ class FakeDetector:
             self.current_model.set(self.model_name.get())
             self.spin_test.set(model.test_size)
             self.spin_train.set(model.train_size)
-            self.selected_classifier.set(model.classifier)
+            self.selected_classifier.set(str(model))
 
-            if isinstance(model, fnd.PAClassifier):
+            if isinstance(model, fnd.LinearDetector):
                 # enable max iter and early stopping
-                self.disable_widgets(model)
+                # have to send classes in; else cant check for both class and
+                # isntance
+                self.disable_widgets(model.__class__)
                 self.spin_iter.set(model.max_iter)
                 self.spin_stopping.set(model.early_stopping)
             else:
                 # disable max iter and early stop
-                self.disable_widgets(model)
+                self.disable_widgets(model.__class__)
 
     def show_about(self, root):
         # Potentially replace with OOP
