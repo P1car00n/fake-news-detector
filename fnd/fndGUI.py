@@ -237,7 +237,8 @@ class FakeDetector:
             self.CLASSIFIER_MAPPING = {
                 'Passive Aggressive Classifier': fnd.PAClassifier,
                 'Perceptron': fnd.Percept,
-                'Multinomial Naive Bayes': fnd.MultiNB}
+                'Multinomial Naive Bayes': fnd.MultiNB,
+                'Complement Naive Bayes': fnd.ComplNB}
             self.CLASSIFIER_ITEMS = sorted(self.CLASSIFIER_MAPPING.keys())
             self.selected_classifier = StringVar()
             self.selected_classifier.set(

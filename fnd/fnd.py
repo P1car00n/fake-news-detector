@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import PassiveAggressiveClassifier, Perceptron
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import MultinomialNB, ComplementNB
 from sklearn.metrics import accuracy_score, confusion_matrix
 
 
@@ -121,7 +121,24 @@ class Percept(LinearDetector):
         return 'Perceptron'
 
 
-class MultiNB(Detector):
+class BayesDetector(Detector):
+    def __init__(
+            self,
+            data, classifier,
+            test_size=0.25,
+            train_size=0.75,
+            column_title='text') -> None:
+
+        Detector.__init__(
+            self,
+            data,
+            classifier(),
+            test_size,
+            train_size,
+            column_title)
+
+
+class MultiNB(BayesDetector):
     def __init__(
             self,
             data,
@@ -129,14 +146,31 @@ class MultiNB(Detector):
             train_size=0.75,
             column_title='text', **kwargs) -> None:
 
-        self.mnb = MultinomialNB()
-
-        Detector.__init__(
+        BayesDetector.__init__(
             self,
-            data, self.mnb,
+            data, MultinomialNB,
             test_size,
             train_size,
             column_title)
 
     def __str__(self) -> str:
         return 'Multinomial Naive Bayes'
+
+
+class ComplNB():
+    def __init__(
+            self,
+            data,
+            test_size=0.25,
+            train_size=0.75,
+            column_title='text', **kwargs) -> None:
+
+        BayesDetector.__init__(
+            self,
+            data, ComplementNB,
+            test_size,
+            train_size,
+            column_title)
+
+    def __str__(self) -> str:
+        return 'Complement Naive Bayes'
