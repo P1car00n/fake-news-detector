@@ -420,28 +420,6 @@ class FakeDetector:
             self.model = self.CLASSIFIER_MAPPING[self.selected_classifier.get()](data_frame=self.model.data_frame, test_size=self.spin_test.get(
         ), train_size=self.spin_train.get(), max_iter=self.spin_iter.get(), early_stopping=self.spin_stopping.get())
 
-        # if self.selected_classifier.get() == 'Multinomial Naive Bayes':
-        #    self.model = fnd.MultiNB(
-        #        self.file,
-        #        test_size=self.spin_test.get(),
-        #        train_size=self.spin_train.get())
-        # elif self.selected_classifier.get() == 'Passive Aggressive Classifier':
-        #    # think how to make use of picling\unpickling
-        #    # if click update again -- error IO on closed file --
-        #    # should just create models from pickle
-        #    self.model = fnd.PAClassifier(
-        #        self.file,
-        #        test_size=self.spin_test.get(),
-        #        train_size=self.spin_train.get(),
-        #        max_iter=self.spin_iter.get(),
-        #        early_stopping=self.spin_stopping.get())
-
-        # should do it with combobox
-        # make score into a property? # print(f'Accuracy:
-        # {round(score*100,2)}%') user friendliness
-        # self.accuracy.set(self.model.score)
-        # self.stats.set(self.model.matrix)
-        # self.set_labels(self.model)
         self.pickle_model(
             self.model,
             './models/' +
