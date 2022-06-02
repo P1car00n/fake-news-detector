@@ -341,7 +341,7 @@ class FakeDetector:
                     0))
             ttk.Button(
                 self.labelfr_advanced,
-                text='Update\\save',
+                text='Update\\save', # rename to just save?
                 command=self.thread_helper).grid(
                 column=4,
                 row=4,
@@ -403,7 +403,7 @@ class FakeDetector:
     def update_after_create(self):
         self.set_labels(self.model)
         self.cb_models['values'] = self.get_models()
-
+    
     def create_model(self):
         if self.spin_test.get() + self.spin_train.get() != 1.0:
             if messagebox.askyesno(
@@ -411,8 +411,13 @@ class FakeDetector:
                     message='It is recommended that Train Size and Test Size be set to give 1.0 in sum. Are you sure that you want to continue?',
                     default='no') is False:
                 return
-
-        self.model = self.CLASSIFIER_MAPPING[self.selected_classifier.get()](self.file, test_size=self.spin_test.get(
+        try:
+            self.model = self.CLASSIFIER_MAPPING[self.selected_classifier.get()](data=self.file, test_size=self.spin_test.get(
+        ), train_size=self.spin_train.get(), max_iter=self.spin_iter.get(), early_stopping=self.spin_stopping.get())
+            self.file.close()  # check if closed -- maybe no need to close
+        # attribute error -- no self.file; ValueError -- closed;  rework?
+        except (AttributeError, ValueError):
+            self.model = self.CLASSIFIER_MAPPING[self.selected_classifier.get()](data_frame=self.model.data_frame, test_size=self.spin_test.get(
         ), train_size=self.spin_train.get(), max_iter=self.spin_iter.get(), early_stopping=self.spin_stopping.get())
 
         # if self.selected_classifier.get() == 'Multinomial Naive Bayes':
@@ -430,7 +435,7 @@ class FakeDetector:
         #        train_size=self.spin_train.get(),
         #        max_iter=self.spin_iter.get(),
         #        early_stopping=self.spin_stopping.get())
-        self.file.close()  # check if closed -- maybe no need to close
+
         # should do it with combobox
         # make score into a property? # print(f'Accuracy:
         # {round(score*100,2)}%') user friendliness

@@ -7,13 +7,13 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 
 
 class Detector:
-
     def __init__(
-            self,
-            data, classifier,
+            self, classifier,
+            data='',
             test_size=0.25,
             train_size=0.75,
-            column_title='text') -> None:
+            column_title='text',
+            data_frame=None) -> None:
         # is there a better way to inspect these? maybe convert to propety at
         # least?
         self.test_size = test_size
@@ -21,7 +21,11 @@ class Detector:
 
         self.classifier = classifier
 
-        self.data_frame = pd.read_csv(data)
+        if data == '':
+            self.data_frame = data_frame
+        else:
+            self.data_frame = pd.read_csv(data)
+
         self.labels = self.data_frame.label
         x_train, x_test, self.y_train, self.y_test = train_test_split(
             self.data_frame[column_title], self.labels, test_size=self.test_size, train_size=self.train_size)
@@ -52,47 +56,50 @@ class Detector:
 
 class LinearDetector(Detector):
     def __init__(
-            self,
-            data, classifier,
+            self, classifier,
+            data='',
             test_size=0.25,
             train_size=0.75,
             max_iter=1000,
             early_stopping=False,
-            column_title='text') -> None:
+            column_title='text',
+            data_frame=None) -> None:
 
         self.max_iter = max_iter
         self.early_stopping = early_stopping
 
         Detector.__init__(
-            self,
-            data,
-            classifier(
+            self, classifier(
                 max_iter=self.max_iter,
                 early_stopping=self.early_stopping),
+            data,
             test_size,
             train_size,
-            column_title)
+            column_title,
+            data_frame)
 
 
 class PAClassifier(LinearDetector):
 
     def __init__(
             self,
-            data,
+            data='',
             test_size=0.25,
             train_size=0.75,
             max_iter=1000,
             early_stopping=False,
-            column_title='text') -> None:
+            column_title='text',
+            data_frame=None) -> None:
 
         LinearDetector.__init__(
-            self,
-            data, PassiveAggressiveClassifier,
+            self, PassiveAggressiveClassifier,
+            data,
             test_size,
             train_size,
             max_iter,
             early_stopping,
-            column_title)
+            column_title,
+            data_frame)
 
     def __str__(self) -> str:
         return 'Passive Aggressive Classifier'
@@ -101,21 +108,23 @@ class PAClassifier(LinearDetector):
 class Percept(LinearDetector):
     def __init__(
             self,
-            data,
+            data='',
             test_size=0.25,
             train_size=0.75,
             max_iter=1000,
             early_stopping=False,
-            column_title='text') -> None:
+            column_title='text',
+            data_frame=None) -> None:
 
         LinearDetector.__init__(
-            self,
-            data, Perceptron,
+            self, Perceptron,
+            data,
             test_size,
             train_size,
             max_iter,
             early_stopping,
-            column_title)
+            column_title,
+            data_frame)
 
     def __str__(self) -> str:
         return 'Perceptron'
@@ -123,35 +132,37 @@ class Percept(LinearDetector):
 
 class BayesDetector(Detector):
     def __init__(
-            self,
-            data, classifier,
+            self, classifier,
+            data='',
             test_size=0.25,
             train_size=0.75,
-            column_title='text') -> None:
+            column_title='text',
+            data_frame=None) -> None:
 
         Detector.__init__(
-            self,
+            self, classifier(),
             data,
-            classifier(),
             test_size,
             train_size,
-            column_title)
+            column_title,
+            data_frame)
 
 
 class MultiNB(BayesDetector):
     def __init__(
             self,
-            data,
+            data='',
             test_size=0.25,
             train_size=0.75,
-            column_title='text', **kwargs) -> None:
+            column_title='text', data_frame=None,**kwargs) -> None:
 
         BayesDetector.__init__(
-            self,
-            data, MultinomialNB,
+            self, MultinomialNB,
+            data,
             test_size,
             train_size,
-            column_title)
+            column_title,
+            data_frame)
 
     def __str__(self) -> str:
         return 'Multinomial Naive Bayes'
@@ -160,17 +171,18 @@ class MultiNB(BayesDetector):
 class ComplNB():
     def __init__(
             self,
-            data,
+            data='',
             test_size=0.25,
             train_size=0.75,
-            column_title='text', **kwargs) -> None:
+            column_title='text', data_frame=None,**kwargs) -> None:
 
         BayesDetector.__init__(
-            self,
-            data, ComplementNB,
+            self, ComplementNB,
+            data,
             test_size,
             train_size,
-            column_title)
+            column_title,
+            data_frame)
 
     def __str__(self) -> str:
         return 'Complement Naive Bayes'
