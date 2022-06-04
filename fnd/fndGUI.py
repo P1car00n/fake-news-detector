@@ -14,6 +14,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkinter import filedialog
 from pathlib import Path
+from ttkthemes import themed_style
 
 
 class FakeDetector:
@@ -30,8 +31,21 @@ class FakeDetector:
         menu_pref = Menu(menubar)
         menu_help = Menu(menubar)
 
+        menu_theme = Menu(menu_pref)
+
         menubar.add_cascade(menu=menu_pref, label='Preferences', underline=0)
         menubar.add_cascade(menu=menu_help, label='Help', underline=0)
+
+        menu_pref.add_cascade(menu=menu_theme, label='Theme', underline=0)
+
+        s = themed_style.ThemedStyle(root)
+        for theme_name in s.theme_names():
+            # Using the i=i trick causes your function to store the current
+            # value of i at the time your lambda is defined, instead of waiting
+            # to look up the value of i later.
+            menu_theme.add_command(
+                label=theme_name,
+                command=lambda theme_name=theme_name: s.set_theme(theme_name))
 
         menu_help.add_command(
             label='About',
@@ -341,7 +355,7 @@ class FakeDetector:
                     0))
             ttk.Button(
                 self.labelfr_advanced,
-                text='Update\\save', # rename to just save?
+                text='Update\\save',  # rename to just save?
                 command=self.thread_helper).grid(
                 column=4,
                 row=4,
@@ -403,7 +417,7 @@ class FakeDetector:
     def update_after_create(self):
         self.set_labels(self.model)
         self.cb_models['values'] = self.get_models()
-    
+
     def create_model(self):
         if self.spin_test.get() + self.spin_train.get() != 1.0:
             if messagebox.askyesno(
@@ -413,12 +427,12 @@ class FakeDetector:
                 return
         try:
             self.model = self.CLASSIFIER_MAPPING[self.selected_classifier.get()](data=self.file, test_size=self.spin_test.get(
-        ), train_size=self.spin_train.get(), max_iter=self.spin_iter.get(), early_stopping=self.spin_stopping.get())
+            ), train_size=self.spin_train.get(), max_iter=self.spin_iter.get(), early_stopping=self.spin_stopping.get())
             self.file.close()  # check if closed -- maybe no need to close
         # attribute error -- no self.file; ValueError -- closed;  rework?
         except (AttributeError, ValueError):
             self.model = self.CLASSIFIER_MAPPING[self.selected_classifier.get()](data_frame=self.model.data_frame, test_size=self.spin_test.get(
-        ), train_size=self.spin_train.get(), max_iter=self.spin_iter.get(), early_stopping=self.spin_stopping.get())
+            ), train_size=self.spin_train.get(), max_iter=self.spin_iter.get(), early_stopping=self.spin_stopping.get())
 
         self.pickle_model(
             self.model,
@@ -501,11 +515,15 @@ if __name__ == '__main__':
             path_to_check := './models'):  # check if works on windows
         os.makedirs(path_to_check)
     root = Tk()
+    #s = ttk.Style()
+    # s.theme_use('clam')
+    #root = themed_tk.ThemedTk()
+    # root.set_theme('arc')
     FakeDetector(root)
     root.mainloop()
 
 # TODO: make the arrows point exactly at the respective buttons; 95% True
 # appears not directly under the button 'Analyse'. add (decent) resizing support
 # for the main window. Check macos support. Put grid statements separately?
-# Add paste to the textbox? Theming support? Contextual menu? Add better
+# Add paste to the textbox? Contextual menu? Add better
 # docstrings? Do away with hacky code
