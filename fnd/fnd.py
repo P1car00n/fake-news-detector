@@ -1,3 +1,24 @@
+# $Id: TODO $
+# Author: Arthur Zevaloff <no@mail.gov>
+# Copyright: Apache-2.0
+
+"""Text classification
+
+This module is intended to be used for classifying text as either 
+fake news or not and defines the following classes:
+
+- `Detector`, a classifier superclass
+- `LinearDetector`, a linear classifer superclass
+- `BayesDetector`, a bayes classifer superclass
+- `PAClassifier`, a linear passive aggressive classifier
+- `Percept`, a linear perceptron classifier
+- `MultiNB`, a multinomial naive bayes classifier
+- `ComplNB`, a complement naive bayes classifier
+
+"""
+
+__docformat__ = 'restructuredtext'
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -154,7 +175,7 @@ class MultiNB(BayesDetector):
             data='',
             test_size=0.25,
             train_size=0.75,
-            column_title='text', data_frame=None,**kwargs) -> None:
+            column_title='text', data_frame=None, **kwargs) -> None:
 
         BayesDetector.__init__(
             self, MultinomialNB,
@@ -174,7 +195,7 @@ class ComplNB():
             data='',
             test_size=0.25,
             train_size=0.75,
-            column_title='text', data_frame=None,**kwargs) -> None:
+            column_title='text', data_frame=None, **kwargs) -> None:
 
         BayesDetector.__init__(
             self, ComplementNB,
