@@ -8,6 +8,7 @@ import pickle
 import os
 from multiprocessing.pool import Pool
 import threading
+import configurator
 
 from tkinter import *
 from tkinter import ttk
@@ -38,20 +39,26 @@ class FakeDetector:
 
         menu_pref.add_cascade(menu=menu_theme, label='Theme', underline=0)
 
-        s = themed_style.ThemedStyle(root)
-        for theme_name in s.theme_names():
+        self.s = themed_style.ThemedStyle(root)
+        for theme_name in self.s.theme_names():
             # Using the i=i trick causes your function to store the current
             # value of i at the time your lambda is defined, instead of waiting
             # to look up the value of i later.
             menu_theme.add_command(
                 label=theme_name,
-                command=lambda theme_name=theme_name: s.set_theme(theme_name))
+                command=lambda theme_name=theme_name: self.update_theme(theme_name))
 
         menu_help.add_command(
             label='About',
             command=lambda: self.show_about(root), underline=0)
 
+        self.configuration = configurator.Configurator()
+        self.prefs = self.configuration.get_prefs()
+        self.s.set_theme(self.prefs['theme'])
+
         self.interface_mode = StringVar()
+        self.interface_mode.set(self.prefs['mode'])
+
         menu_pref.add_checkbutton(
             label='Activate advanced mode',
             command=lambda: self.set_interface(
@@ -68,6 +75,12 @@ class FakeDetector:
         self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
         root.columnconfigure(0, weight=1)
         root.rowconfigure(0, weight=1)
+
+        # temp
+        self.set_interface(
+            self.interface_mode.get(),
+            self.mainframe)  # might want to rework
+        # temp
 
         # TODO: CHECK IT'S NOT TOO BIG
         self.input_text = Text(self.mainframe, width=40, height=10)
@@ -166,6 +179,7 @@ class FakeDetector:
     def set_interface(self, mode, mainframe):
         # Not very OOP; maybe rework
         if mode == 'advanced':
+            self.configuration.update_pref(mode='advanced')
             self.labelfr_advanced = ttk.Labelframe(
                 mainframe, text='Advanced Interface')
             self.labelfr_advanced.grid(
@@ -363,7 +377,13 @@ class FakeDetector:
                     10,
                     0))
         elif mode == 'simple':
-            self.labelfr_advanced.destroy()
+            self.configuration.update_pref(mode='simple')
+            try:
+                self.labelfr_advanced
+            except AttributeError:
+                pass  # is it even legal?
+            else:
+                self.labelfr_advanced.destroy()
 
     def get_models(self):
         return [os.path.splitext(file_name)[0]
@@ -389,6 +409,10 @@ class FakeDetector:
                      ".pickle"),
                     ("all files",
                      "*.*")]))  # file type; more flair
+
+    def update_theme(self, theme_name):
+        self.configuration.update_pref(theme=theme_name)
+        self.s.set_theme(theme_name)
 
     def get_filename(self):
         self.file = filedialog.askopenfile(

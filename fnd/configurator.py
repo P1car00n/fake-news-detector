@@ -18,7 +18,7 @@ class Configurator:
         self.config.read(self._file_path)
 
     def update_pref(self, **kwargs):  # can be replaced with read_dict
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             self.config['Preferences'][key] = value
         with open(self._file_path, 'w') as configfile:
             self.config.write(configfile)
