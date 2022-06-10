@@ -83,7 +83,7 @@ class FakeDetector:
         # temp
 
         # TODO: CHECK IT'S NOT TOO BIG
-        self.input_text = Text(self.mainframe, width=40, height=10)
+        self.input_text = Text(self.mainframe, width=40, height=20)
         self.input_text.grid(
             column=0, row=2, rowspan=2, sticky=(
                 N, W, E, S), padx=(
@@ -376,6 +376,13 @@ class FakeDetector:
                 pady=(
                     10,
                     0))
+            # testing
+            for child in self.labelfr_advanced.winfo_children(): # create a function(frame, padding, except for)
+                child.grid_configure(padx=5, pady=5)
+
+            for child in self.labelfr_options.winfo_children():
+                child.grid_configure(padx=5, pady=5)
+
         elif mode == 'simple':
             self.configuration.update_pref(mode='simple')
             try:
