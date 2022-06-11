@@ -6,7 +6,6 @@ This module contains all the logic needed to build the program's GUI.
 import fnd
 import pickle
 import os
-from multiprocessing.pool import Pool
 import threading
 import configurator
 
@@ -113,7 +112,7 @@ class FakeDetector:
             state='active',
             command=self.analyse).grid(
             column=2,
-            row=1, sticky=(E,W))  # sticky=W
+            row=1, sticky=(E, W))  # sticky=W
         ttk.Button(self.mainframe, text='Close', command=root.destroy).grid(
             column=2, row=3, pady=(10, 0), sticky=(E, S))
 
@@ -144,8 +143,8 @@ class FakeDetector:
         # self.update_padding(self.mainframe)
 
         # Temporarily
-        self.mainframe.columnconfigure((0,2), weight=1)
-        self.mainframe.rowconfigure((1,2), weight=1)
+        self.mainframe.columnconfigure((0, 2), weight=1)
+        self.mainframe.rowconfigure((1, 2), weight=1)
 
         # This code is bad: refactor it somehow
         # for child in self.mainframe.winfo_children():
@@ -247,7 +246,7 @@ class FakeDetector:
                 self.labelfr_advanced, text=r'Options\tweaks')
             self.labelfr_options.grid(
                 column=2, row=0, columnspan=3, rowspan=4, sticky=(
-                    N, W, S, E), pady=(10, 0), padx=10)           
+                    N, W, S, E), pady=(10, 0), padx=10)
             ttk.Label(
                 self.labelfr_options,
                 text='Name of the model:').grid(
@@ -378,15 +377,15 @@ class FakeDetector:
                 pady=(
                     10,
                     0))
-                    
+
             # tmp
-            self.labelfr_advanced.columnconfigure((2,3,4), weight=1)
+            self.labelfr_advanced.columnconfigure((2, 3, 4), weight=1)
             self.labelfr_advanced.rowconfigure((4), weight=1)
             # tmp
-            
 
             # testing
-            for child in self.labelfr_advanced.winfo_children(): # create a function(frame, padding, except for)
+            for child in self.labelfr_advanced.winfo_children(
+            ):  # create a function(frame, padding, except for)
                 child.grid_configure(padx=5, pady=5)
 
             for child in self.labelfr_options.winfo_children():
@@ -416,13 +415,13 @@ class FakeDetector:
 
     def export_model(self):
         path = filedialog.asksaveasfilename(
-                initialfile='myModel.pickle',
-                initialdir='./models',
-                filetypes=[
-                    ("pickle files",
-                     ".pickle"),
-                    ("all files",
-                     "*.*")])  # file type; more flair
+            initialfile='myModel.pickle',
+            initialdir='./models',
+            filetypes=[
+                ("pickle files",
+                 ".pickle"),
+                ("all files",
+                 "*.*")])  # file type; more flair
         # make sure that path is set
         if path == ():
             return
@@ -448,7 +447,7 @@ class FakeDetector:
         self.model_name.set(Path(self.file.name).stem)
 
     def thread_helper(self):
-       # with Pool() as p:
+        # with Pool() as p:
         #    p.apply(func=self.create_model)
         # works but multiprocessing would be better
         t = threading.Thread(target=self.create_model)
@@ -563,4 +562,3 @@ if __name__ == '__main__':
     root = Tk()
     FakeDetector(root)
     root.mainloop()
-
