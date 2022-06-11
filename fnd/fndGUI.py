@@ -472,8 +472,7 @@ class FakeDetector:
         try:
             self.model = self.CLASSIFIER_MAPPING[self.selected_classifier.get()](data=self.file, test_size=self.spin_test.get(
             ), train_size=self.spin_train.get(), max_iter=self.spin_iter.get(), early_stopping=self.spin_stopping.get())
-            self.file.close()  # check if closed -- maybe no need to close
-        # attribute error -- no self.file; ValueError -- closed;  rework?
+            self.file.close()
         except (AttributeError, ValueError):
             self.model = self.CLASSIFIER_MAPPING[self.selected_classifier.get()](data_frame=self.model.data_frame, test_size=self.spin_test.get(
             ), train_size=self.spin_train.get(), max_iter=self.spin_iter.get(), early_stopping=self.spin_stopping.get())
@@ -484,7 +483,6 @@ class FakeDetector:
             self.model_name.get() +
             '.pickle')
         self.update_after_create()
-        #self.cb_models['values'] = self.get_models()
 
     def pickle_model(self, model, file_path):
         with open(file_path, 'wb') as f:
@@ -519,7 +517,6 @@ class FakeDetector:
                 self.disable_widgets(model.__class__)
 
     def show_about(self, root):
-        # Potentially replace with OOP
         win_about = Toplevel(root)
         win_about.title('About Fake News Detector')
         win_about.columnconfigure(0, weight=1)
@@ -557,18 +554,9 @@ class FakeDetector:
 
 if __name__ == '__main__':
     if not os.path.exists(
-            path_to_check := './models'):  # check if works on windows
+            path_to_check := './models'):
         os.makedirs(path_to_check)
     root = Tk()
-    #s = ttk.Style()
-    # s.theme_use('clam')
-    #root = themed_tk.ThemedTk()
-    # root.set_theme('arc')
     FakeDetector(root)
     root.mainloop()
 
-# TODO: make the arrows point exactly at the respective buttons; 95% True
-# appears not directly under the button 'Analyse'. add (decent) resizing support
-# for the main window. Check macos support. Put grid statements separately?
-# Add paste to the textbox? Contextual menu? Add better
-# docstrings? Do away with hacky code
