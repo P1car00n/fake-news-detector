@@ -5,15 +5,16 @@ import os
 class Configurator:
     def __init__(self, folder='./settings', file_name='preferences.ini'):
         self.config = configparser.ConfigParser()
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-            self.config.add_section('Preferences')
-            self.config['Preferences']['theme'] = 'clam'
-            self.config['Preferences']['mode'] = 'simple'
-            self.update_pref()
 
         # subject of rewrite to accept one path whole
         self._file_path = folder + '/' + file_name
+
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+            self.config.add_section('Preferences')
+            self.config['Preferences']['theme'] = 'arc'
+            self.config['Preferences']['mode'] = 'simple'
+            self.update_pref()
 
         self.config.read(self._file_path)
 
