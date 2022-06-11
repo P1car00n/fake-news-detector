@@ -415,16 +415,20 @@ class FakeDetector:
             self.sb_iter['state'] = 'disabled'
 
     def export_model(self):
-        self.pickle_model(
-            self.model,
-            filedialog.asksaveasfilename(
+        path = filedialog.asksaveasfilename(
                 initialfile='myModel.pickle',
                 initialdir='./models',
                 filetypes=[
                     ("pickle files",
                      ".pickle"),
                     ("all files",
-                     "*.*")]))  # file type; more flair
+                     "*.*")])  # file type; more flair
+        # make sure that path is set
+        if path == ():
+            return
+        self.pickle_model(
+            self.model,
+            path)  # file type; more flair
 
     def update_theme(self, theme_name):
         self.configuration.update_pref(theme=theme_name)
