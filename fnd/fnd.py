@@ -45,7 +45,7 @@ class Detector:
         if data == '':
             self.data_frame = data_frame
         else:
-            self.data_frame = pd.read_csv(data)
+            self.data_frame = pd.read_csv(data, encoding='utf-8')
 
         self.labels = self.data_frame.label
         x_train, x_test, self.y_train, self.y_test = train_test_split(
