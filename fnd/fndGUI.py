@@ -242,11 +242,12 @@ class FakeDetector:
                 textvariable=self.stats).grid(
                 column=1,
                 row=3)
+
             self.labelfr_options = ttk.Labelframe(
                 self.labelfr_advanced, text=r'Options\tweaks')
             self.labelfr_options.grid(
                 column=2, row=0, columnspan=3, rowspan=4, sticky=(
-                    N, W, S, E), pady=(10, 0), padx=10)
+                    N, W, S, E), pady=(10, 0), padx=10)           
             ttk.Label(
                 self.labelfr_options,
                 text='Name of the model:').grid(
@@ -377,6 +378,13 @@ class FakeDetector:
                 pady=(
                     10,
                     0))
+                    
+            # tmp
+            self.labelfr_advanced.columnconfigure((2,3,4), weight=1)
+            self.labelfr_advanced.rowconfigure((4), weight=1)
+            # tmp
+            
+
             # testing
             for child in self.labelfr_advanced.winfo_children(): # create a function(frame, padding, except for)
                 child.grid_configure(padx=5, pady=5)
