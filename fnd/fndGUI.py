@@ -85,19 +85,19 @@ class FakeDetector:
         # TODO: CHECK IT'S NOT TOO BIG
         self.input_text = Text(self.mainframe, width=40, height=20)
         self.input_text.grid(
-            column=0, row=2, rowspan=2, sticky=(
+            column=0, row=1, rowspan=2, sticky=(
                 N, W, E, S), padx=(
                 10, 0))
         self.scroll_text = ttk.Scrollbar(
             self.mainframe, orient=VERTICAL, command=self.input_text.yview)
         self.scroll_text.grid(
-            column=1, row=2, rowspan=2, sticky=(
+            column=1, row=1, rowspan=2, sticky=(
                 N, S, W), padx=(0, 10))  # sticky=(N,S)
         self.input_text.configure(yscrollcommand=self.scroll_text.set)
 
         labelfr_result = ttk.Labelframe(self.mainframe, text='Result')
         labelfr_result.grid(
-            column=2, row=3, sticky=(
+            column=2, row=2, sticky=(
                 N, W, S, E), pady=(
                 10, 0), padx=10)
         self.analysis_result = StringVar()
@@ -113,16 +113,16 @@ class FakeDetector:
             state='active',
             command=self.analyse).grid(
             column=2,
-            row=2)  # sticky=W
+            row=1, sticky=(E,W))  # sticky=W
         ttk.Button(self.mainframe, text='Close', command=root.destroy).grid(
-            column=2, row=4, pady=(10, 0))
+            column=2, row=3, pady=(10, 0), sticky=(E, S))
 
         ttk.Label(
             self.mainframe,
             text='Put the text to analyze below \u2193').grid(
             column=0,
             row=0,
-            sticky=S)
+            sticky=(S, N))
         ttk.Label(
             self.mainframe,
             text='Click to start analysation \u2193').grid(
@@ -144,8 +144,8 @@ class FakeDetector:
         # self.update_padding(self.mainframe)
 
         # Temporarily
-        self.mainframe.columnconfigure(tuple(range(10)), weight=1)
-        self.mainframe.rowconfigure(tuple(range(10)), weight=1)
+        self.mainframe.columnconfigure((0,2), weight=1)
+        self.mainframe.rowconfigure((1,2), weight=1)
 
         # This code is bad: refactor it somehow
         # for child in self.mainframe.winfo_children():
@@ -528,8 +528,6 @@ class FakeDetector:
         ttk.Label(frame_about,
                   text='Licensed under the Apache-2.0 license').grid(column=0,
                                                                      row=2)
-        frame_about.columnconfigure(0, weight=1)
-        frame_about.rowconfigure((0, 1, 2, 3), weight=1)
         ttk.Button(
             frame_about,
             text='Close',
@@ -537,7 +535,9 @@ class FakeDetector:
             state='active').grid(
             column=0,
             row=3,
-            sticky=(E))
+            sticky=(E, S))
+        frame_about.columnconfigure(0, weight=1)
+        frame_about.rowconfigure((0, 1, 2, 3), weight=1)
         win_about.bind('<Return>', lambda e: win_about.destroy())
 
         for child in frame_about.winfo_children():
