@@ -434,7 +434,10 @@ class FakeDetector:
         self.file = filedialog.askopenfile(
             filetypes=[("CSV files", ".csv"), ("all files", "*.*")])  # check if cancelled
         # use regex to propose a default file name
-        self.current_model.set(self.file.name + ' <Unsaved>')
+        try:
+            self.current_model.set(self.file.name + ' <Unsaved>')
+        except AttributeError:
+            return
         self.current_model_lb['foreground'] = 'red'  # make red
         self.cb_models.set('')
         # self.model_name.set(os.path.basename(os.path.normcase(self.file.name)))
