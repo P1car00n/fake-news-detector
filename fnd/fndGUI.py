@@ -191,9 +191,10 @@ class FakeDetector:
                 column=0,
                 row=0)
             self.current_model = StringVar()
-            ttk.Label(
+            self.current_model_lb = ttk.Label(
                 self.labelfr_advanced,
-                textvariable=self.current_model).grid(
+                textvariable=self.current_model)
+            self.current_model_lb.grid(
                 column=0,
                 row=1)
             ttk.Label(
@@ -425,7 +426,8 @@ class FakeDetector:
         self.file = filedialog.askopenfile(
             filetypes=[("CSV files", ".csv"), ("all files", "*.*")])  # check if cancelled
         # use regex to propose a default file name
-        self.current_model.set(self.file.name + ' <Unsaved>')  # make red
+        self.current_model.set(self.file.name + ' <Unsaved>')
+        self.current_model_lb['foreground'] = 'red'  # make red
         self.cb_models.set('')
         # self.model_name.set(os.path.basename(os.path.normcase(self.file.name)))
         self.model_name.set(Path(self.file.name).stem)
@@ -489,6 +491,7 @@ class FakeDetector:
             if self.model_name.get() == '':
                 self.model_name.set(self.selected_model.get())
             self.current_model.set(self.model_name.get())
+            self.current_model_lb['foreground'] = ''
             self.spin_test.set(model.test_size)
             self.spin_train.set(model.train_size)
             self.selected_classifier.set(str(model))
