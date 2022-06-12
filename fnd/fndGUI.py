@@ -483,8 +483,13 @@ class FakeDetector:
             ), train_size=self.spin_train.get(), max_iter=self.spin_iter.get(), early_stopping=self.spin_stopping.get())
             self.file.close()
         except (AttributeError, ValueError):
-            self.model = self.CLASSIFIER_MAPPING[self.selected_classifier.get()](data_frame=self.model.data_frame, test_size=self.spin_test.get(
-            ), train_size=self.spin_train.get(), max_iter=self.spin_iter.get(), early_stopping=self.spin_stopping.get())
+            try:
+                self.model = self.CLASSIFIER_MAPPING[self.selected_classifier.get()](data_frame=self.model.data_frame, test_size=self.spin_test.get(
+                ), train_size=self.spin_train.get(), max_iter=self.spin_iter.get(), early_stopping=self.spin_stopping.get())
+            except AttributeError:
+                messagebox.showerror(title='Error occured',
+                    message='An error has occured. Check that your data is a .csv file with utf-8 encoding')
+                return
 
         self.pickle_model(
             self.model,
