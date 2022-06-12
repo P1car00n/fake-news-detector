@@ -169,7 +169,13 @@ class FakeDetector:
 
     def analyse(self, *args):
         # end-1c trim newline # there still is a newline \n
-        result = self.model.predict(self.input_text.get('1.0', 'end-1c'))
+        try:
+            result = self.model.predict(self.input_text.get('1.0', 'end-1c'))
+        except AttributeError:
+            messagebox.showerror(
+                title='No models',
+                message='Can\'t analyse. No models detected. Create a model to use the app')
+            return
         # messagebox.showinfo(
         #    self.input_text.get(
         #        '1.0', 'end-1c'))  # end-1c trim newline
