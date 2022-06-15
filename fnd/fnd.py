@@ -189,7 +189,7 @@ class MultiNB(BayesDetector):
         return 'Multinomial Naive Bayes'
 
 
-class ComplNB():
+class ComplNB(BayesDetector):
     def __init__(
             self,
             data='',
