@@ -361,7 +361,7 @@ class FakeDetector:
                 text='Create new...',  # maybe just Create new model?
                 command=self.get_filename).grid(
                 column=2,
-                row=4,
+                row=5,
                 pady=(
                     10,
                     0))
@@ -370,7 +370,7 @@ class FakeDetector:
                 text='Export',
                 command=self.export_model).grid(
                 column=3,
-                row=4,
+                row=5,
                 pady=(
                     10,
                     0))
@@ -379,7 +379,7 @@ class FakeDetector:
                 text='Update\\save',  # rename to just save?
                 command=self.thread_helper).grid(
                 column=4,
-                row=4,
+                row=5,
                 pady=(
                     10,
                     0))
@@ -456,6 +456,9 @@ class FakeDetector:
         # with Pool() as p:
         #    p.apply(func=self.create_model)
         # works but multiprocessing would be better
+        self.prog_bar = ttk.Progressbar(self.labelfr_advanced, orient=HORIZONTAL, length=460, mode='indeterminate')
+        self.prog_bar.grid(row=4, column=2, columnspan=3)
+        self.prog_bar.start()
         t = threading.Thread(target=self.create_model)
         t.start()
         # t.join()
@@ -470,6 +473,8 @@ class FakeDetector:
     def update_after_create(self):
         self.set_labels(self.model)
         self.cb_models['values'] = self.get_models()
+        self.prog_bar.stop()
+        self.prog_bar.destroy()
 
     def create_model(self):
         if self.spin_test.get() + self.spin_train.get() != 1.0:
