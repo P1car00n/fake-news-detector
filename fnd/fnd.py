@@ -4,7 +4,7 @@
 
 """Text classification
 
-This module is intended to be used for classifying text as either 
+This module is intended to be used for classifying text as either
 fake news or not and defines the following classes:
 
 - `Detector`, a classifier superclass

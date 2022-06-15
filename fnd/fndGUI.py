@@ -456,7 +456,11 @@ class FakeDetector:
         # with Pool() as p:
         #    p.apply(func=self.create_model)
         # works but multiprocessing would be better
-        self.prog_bar = ttk.Progressbar(self.labelfr_advanced, orient=HORIZONTAL, length=460, mode='indeterminate')
+        self.prog_bar = ttk.Progressbar(
+            self.labelfr_advanced,
+            orient=HORIZONTAL,
+            length=460,
+            mode='indeterminate')
         self.prog_bar.grid(row=4, column=2, columnspan=3)
         self.prog_bar.start()
         t = threading.Thread(target=self.create_model)
@@ -492,7 +496,8 @@ class FakeDetector:
                 self.model = self.CLASSIFIER_MAPPING[self.selected_classifier.get()](data_frame=self.model.data_frame, test_size=self.spin_test.get(
                 ), train_size=self.spin_train.get(), max_iter=self.spin_iter.get(), early_stopping=self.spin_stopping.get())
             except AttributeError:
-                messagebox.showerror(title='Error occured',
+                messagebox.showerror(
+                    title='Error occured',
                     message='An error has occured. Check that your data is a .csv file with utf-8 encoding')
                 return
 
@@ -551,15 +556,17 @@ class FakeDetector:
             frame_about,
             text='Made with: Python 3.10.4, Tk 8.6').grid(
             column=0,
-            row=1, columnspan= 2)
+            row=1, columnspan=2)
         ttk.Label(frame_about,
                   text='Licensed under the Apache-2.0 license').grid(column=0,
-                                                                     row=2, columnspan=2)
+                                                                     row=2,
+                                                                     columnspan=2)
         ttk.Label(frame_about,
-                  text='Link to code: ').grid(column=0,row=3)
+                  text='Link to code: ').grid(column=0, row=3)
         link_to_code = ttk.Entry(frame_about, width=40)
-        link_to_code.grid(column=1,row=3)
-        link_to_code.insert(0, 'https://github.com/P1car00n/fake-news-detector')
+        link_to_code.grid(column=1, row=3)
+        link_to_code.insert(
+            0, 'https://github.com/P1car00n/fake-news-detector')
         link_to_code['state'] = 'readonly'
         ttk.Button(
             frame_about,
