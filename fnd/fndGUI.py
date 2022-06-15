@@ -541,24 +541,30 @@ class FakeDetector:
             frame_about,
             text='Creator: Arthur Zevaloff').grid(
             column=0,
-            row=0)
+            row=0, columnspan=2)
         ttk.Label(
             frame_about,
             text='Made with: Python 3.10.4, Tk 8.6').grid(
             column=0,
-            row=1)
+            row=1, columnspan= 2)
         ttk.Label(frame_about,
                   text='Licensed under the Apache-2.0 license').grid(column=0,
-                                                                     row=2)
+                                                                     row=2, columnspan=2)
+        ttk.Label(frame_about,
+                  text='Link to code: ').grid(column=0,row=3)
+        link_to_code = ttk.Entry(frame_about, width=40)
+        link_to_code.grid(column=1,row=3)
+        link_to_code.insert(0, 'https://github.com/P1car00n/fake-news-detector')
+        link_to_code['state'] = 'readonly'
         ttk.Button(
             frame_about,
             text='Close',
             command=win_about.destroy,
             state='active').grid(
-            column=0,
-            row=3,
+            column=1,
+            row=4,
             sticky=(E, S))
-        frame_about.columnconfigure(0, weight=1)
+        frame_about.columnconfigure((0, 1), weight=1)
         frame_about.rowconfigure((0, 1, 2, 3), weight=1)
         win_about.bind('<Return>', lambda e: win_about.destroy())
 
