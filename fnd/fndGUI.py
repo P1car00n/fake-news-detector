@@ -100,11 +100,13 @@ class FakeDetector:
                 N, W, S, E), pady=(
                 10, 0), padx=10)
         self.analysis_result = StringVar()
-        ttk.Label(
+        self.result_lb = ttk.Label(
             labelfr_result,
-            textvariable=self.analysis_result).grid(
-            column=0,
-            row=0)
+            textvariable=self.analysis_result)
+        self.result_lb.grid(column=0, row=0)
+        
+        labelfr_result.columnconfigure(0, weight=1)
+        labelfr_result.rowconfigure(0, weight=1)
 
         ttk.Button(
             self.mainframe,
@@ -179,7 +181,12 @@ class FakeDetector:
         # messagebox.showinfo(
         #    self.input_text.get(
         #        '1.0', 'end-1c'))  # end-1c trim newline
-        self.analysis_result.set(result)
+        if result == ['FAKE']:
+            self.analysis_result.set('The news is most likely FAKE!')
+            self.result_lb['foreground'] = 'red'
+        elif result == ['REAL']:
+            self.analysis_result.set('The news is most likely REAL!')
+            self.result_lb['foreground'] = 'green'
 
     def set_interface(self, mode, mainframe):
         # Not very OOP; maybe rework
