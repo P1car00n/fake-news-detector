@@ -284,7 +284,7 @@ class FakeDetector:
             self.CLASSIFIER_ITEMS = sorted(self.CLASSIFIER_MAPPING.keys())
             self.selected_classifier = StringVar()
             self.selected_classifier.set(
-                self.CLASSIFIER_MAPPING['Passive Aggressive Classifier'])  # self.CLASSIFIER_ITEMS[0]
+                'Passive Aggressive Classifier')  # self.CLASSIFIER_ITEMS[0] # tmp
             self.cb_classifier = ttk.Combobox(
                 self.labelfr_options,
                 textvariable=self.selected_classifier,
